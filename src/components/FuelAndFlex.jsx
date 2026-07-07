@@ -155,13 +155,13 @@ const EMPTY_DATA = {dailyLogs:{},workoutLogs:{},customSplit:{},onboardingDismiss
 
 async function loadData() {
   try {
-    if (!window.storage) return {...EMPTY_DATA};
-    const r = await window.storage.get(STORE_KEY);
-    return r ? {...EMPTY_DATA,...JSON.parse(r.value)} : {...EMPTY_DATA};
+    if (typeof window === "undefined") return {...EMPTY_DATA};
+    const raw = window.localStorage.getItem(STORE_KEY);
+    return raw ? {...EMPTY_DATA,...JSON.parse(raw)} : {...EMPTY_DATA};
   } catch { return {...EMPTY_DATA}; }
 }
 async function persist(data) {
-  try { if (window.storage) await window.storage.set(STORE_KEY,JSON.stringify(data)); }
+  try { if (typeof window !== "undefined") window.localStorage.setItem(STORE_KEY,JSON.stringify(data)); }
   catch(e) { console.error(e); }
 }
 
