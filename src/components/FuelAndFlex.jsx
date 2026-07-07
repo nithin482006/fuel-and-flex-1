@@ -10,57 +10,102 @@ import {
    FUEL & FLEX v3 — Futuristic UI · Neon Green · Photo Fix
    ============================================================ */
 
-/* Only confirmed-working Wikimedia filenames */
+/* Local cyberpunk exercise illustrations */
+import imgBenchPress from "../assets/exercises/Barbell Bench Press.png";
+import imgInclineDbPress from "../assets/exercises/Incline Dumbbell Press.png";
+import imgPecDeck from "../assets/exercises/Pec Deck Fly.png";
+import imgCableChestFly from "../assets/exercises/Cable Chest Fly.png";
+import imgTricepsPushdown from "../assets/exercises/Triceps Pushdown.png";
+import imgOhDbExt from "../assets/exercises/Overhead Dumbbell Extension.png";
+import imgLatPulldown from "../assets/exercises/Lat Pulldown.png";
+import imgSeatedCableRow from "../assets/exercises/Seated Cable Row.png";
+import imgChestSupRow from "../assets/exercises/Chest Supported Row.png";
+import imgStraightArm from "../assets/exercises/Straight Arm Pulldown.png";
+import imgDbCurl from "../assets/exercises/Dumbbell Curl.png";
+import imgHammerCurl from "../assets/exercises/Hammer Curl.png";
+import imgBarbellSquat from "../assets/exercises/Barbell Squat.png";
+import imgLegPress from "../assets/exercises/Leg Press.png";
+import imgRDL from "../assets/exercises/Romanian Deadlift.png";
+import imgLegExt from "../assets/exercises/Leg Extension.png";
+import imgLegCurl from "../assets/exercises/Leg Curl.png";
+import imgStandingCalf from "../assets/exercises/Standing Calf Raise.png";
+import imgSeatedShoulder from "../assets/exercises/Seated Dumbbell Shoulder Press.png";
+import imgLateralRaise from "../assets/exercises/Dumbbell Lateral Raise.png";
+import imgRearDelt from "../assets/exercises/Rear Delt Fly.png";
+import imgFacePull from "../assets/exercises/Face Pull.png";
+import imgHangingKnee from "../assets/exercises/Hanging Knee Raise.png";
+import imgPlank from "../assets/exercises/Plank.png";
+import imgInclineBench from "../assets/exercises/Incline Bench Press.png";
+import imgPullUp from "../assets/exercises/Pull-Up.png";
+import imgMachineChest from "../assets/exercises/Machine Chest Press.png";
+import imgCableRow from "../assets/exercises/Cable Row.png";
+import imgEzBarCurl from "../assets/exercises/EZ Bar Curl.png";
+import imgRopePushdown from "../assets/exercises/Rope Triceps Pushdown.png";
+import imgFrontSquat from "../assets/exercises/Front Squat.png";
+import imgWalkingLunges from "../assets/exercises/Walking Lunges.png";
+import imgSeatedLegCurl from "../assets/exercises/Seated Leg Curl.png";
+import imgSeatedCalf from "../assets/exercises/Seated Calf Raise.png";
+import imgInclineDbCurl from "../assets/exercises/Incline Dumbbell Curl.png";
+import imgSkullCrushers from "../assets/exercises/Skull Crushers.png";
+
 const WK = (f, w = 500) =>
   `https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/${encodeURIComponent(f)}&width=${w}`;
 
-/* Every entry here uses a filename confirmed to exist */
 const EX_IMG = {
-  "Barbell Bench Press":             WK("Bench_press_1.jpg"),
-  "Incline Dumbbell Press":          WK("Incline-bench-press-1.png"),
-  "Pec Deck Fly":                    WK("Chest_flies_with_cable_machine_-_cable_crossover_flies.jpg"),
-  "Cable Chest Fly":                 WK("Chest_flies_with_cable_machine_-_cable_crossover_flies.jpg"),
-  "Triceps Pushdown":                WK("Girl_double_dumbbell_tricep_extension.jpg"),
-  "Overhead Dumbbell Extension":     WK("Girl_double_dumbbell_tricep_extension.jpg"),
-  "Rope Pushdown":                   WK("Girl_double_dumbbell_tricep_extension.jpg"),
-  "Skull Crushers":                  WK("Girl_double_dumbbell_tricep_extension.jpg"),
-  "Lat Pulldown":                    WK("Girl_doing_lat_pulldown_exercise.jpg"),
-  "Straight-Arm Pulldown":           WK("Girl_doing_lat_pulldown_exercise.jpg"),
-  "Seated Cable Row":                WK("PulldownMachineExercise.JPG"),
-  "Chest-Supported Row":             WK("PulldownMachineExercise.JPG"),
-  "Cable Row":                       WK("PulldownMachineExercise.JPG"),
-  "Face Pull":                       WK("PulldownMachineExercise.JPG"),
-  "Dumbbell Curl":                   WK("Girl_doing_one_arm_shoulder_raise.jpg"),
-  "Hammer Curl":                     WK("Girl_doing_one_arm_shoulder_raise.jpg"),
-  "EZ Bar Curl":                     WK("Girl_doing_one_arm_shoulder_raise.jpg"),
-  "Incline Dumbbell Curl":           WK("Girl_doing_one_arm_shoulder_raise.jpg"),
-  "Squat":                           WK("Squats-1.png"),
-  "Front Squat / Goblet Squat":      WK("Squats-1.png"),
-  "Leg Press":                       WK("LegExtensionMachineExercise.JPG"),
-  "Leg Extension":                   WK("LegExtensionMachineExercise.JPG"),
-  "Leg Curl":                        WK("LegExtensionMachineExercise.JPG"),
-  "Seated Calf Raise":               WK("LegExtensionMachineExercise.JPG"),
-  "Standing Calf Raise":             WK("Squats-1.png"),
-  "Romanian Deadlift":               WK("Fit_young_man_doing_deadlift_exercise_in_gym.jpg"),
-  "Walking Lunges (per leg)":        WK("Walking-lunges-1.png"),
-  "Seated Dumbbell Shoulder Press":  WK("Girl_doing_shoulder_workout.jpg"),
-  "Rear Delt Fly":                   WK("Girl_doing_shoulder_workout.jpg"),
-  "Lateral Raise":                   WK("Girl_doing_one_arm_shoulder_raise.jpg"),
-  "Hanging Knee Raise":              WK("Girl_exercising_doing_a_plank.jpg"),
-  "Plank":                           WK("Girl_exercising_doing_a_plank.jpg"),
-  "Incline Bench Press":             WK("Incline-bench-press-1.png"),
-  "Machine Chest Press":             WK("Bench_press_1.jpg"),
-  "Pull-ups / Assisted Pull-ups":    WK("U.S._Air_Force_Senior_Airman_Brandon_Stout_performs_pull-ups.jpg"),
+  "Barbell Bench Press":             imgBenchPress,
+  "Incline Dumbbell Press":          imgInclineDbPress,
+  "Pec Deck Fly":                    imgPecDeck,
+  "Cable Chest Fly":                 imgCableChestFly,
+  "Triceps Pushdown":                imgTricepsPushdown,
+  "Overhead Dumbbell Extension":     imgOhDbExt,
+  "Rope Pushdown":                   imgRopePushdown,
+  "Rope Triceps Pushdown":           imgRopePushdown,
+  "Skull Crushers":                  imgSkullCrushers,
+  "Lat Pulldown":                    imgLatPulldown,
+  "Straight-Arm Pulldown":           imgStraightArm,
+  "Straight Arm Pulldown":           imgStraightArm,
+  "Seated Cable Row":                imgSeatedCableRow,
+  "Chest-Supported Row":             imgChestSupRow,
+  "Chest Supported Row":             imgChestSupRow,
+  "Cable Row":                       imgCableRow,
+  "Face Pull":                       imgFacePull,
+  "Dumbbell Curl":                   imgDbCurl,
+  "Hammer Curl":                     imgHammerCurl,
+  "EZ Bar Curl":                     imgEzBarCurl,
+  "Incline Dumbbell Curl":           imgInclineDbCurl,
+  "Squat":                           imgBarbellSquat,
+  "Barbell Squat":                   imgBarbellSquat,
+  "Front Squat / Goblet Squat":      imgFrontSquat,
+  "Front Squat":                     imgFrontSquat,
+  "Leg Press":                       imgLegPress,
+  "Leg Extension":                   imgLegExt,
+  "Leg Curl":                        imgLegCurl,
+  "Seated Leg Curl":                 imgSeatedLegCurl,
+  "Seated Calf Raise":               imgSeatedCalf,
+  "Standing Calf Raise":             imgStandingCalf,
+  "Romanian Deadlift":               imgRDL,
+  "Walking Lunges (per leg)":        imgWalkingLunges,
+  "Walking Lunges":                  imgWalkingLunges,
+  "Seated Dumbbell Shoulder Press":  imgSeatedShoulder,
+  "Rear Delt Fly":                   imgRearDelt,
+  "Lateral Raise":                   imgLateralRaise,
+  "Dumbbell Lateral Raise":          imgLateralRaise,
+  "Hanging Knee Raise":              imgHangingKnee,
+  "Plank":                           imgPlank,
+  "Incline Bench Press":             imgInclineBench,
+  "Machine Chest Press":             imgMachineChest,
+  "Pull-ups / Assisted Pull-ups":    imgPullUp,
+  "Pull-Up":                         imgPullUp,
 };
 
 const DAY_COVER = {
-  Monday:    WK("Bench_press_1.jpg"),
-  Tuesday:   WK("Girl_doing_lat_pulldown_exercise.jpg"),
-  Wednesday: WK("Squats-1.png"),
-  Thursday:  WK("Girl_doing_shoulder_workout.jpg"),
-  Friday:    WK("U.S._Air_Force_Senior_Airman_Brandon_Stout_performs_pull-ups.jpg"),
-  Saturday:  WK("Walking-lunges-1.png"),
-  Sunday:    WK("Fit_young_man_doing_deadlift_exercise_in_gym.jpg"),
+  Monday:    imgBenchPress,
+  Tuesday:   imgLatPulldown,
+  Wednesday: imgBarbellSquat,
+  Thursday:  imgSeatedShoulder,
+  Friday:    imgPullUp,
+  Saturday:  imgWalkingLunges,
+  Sunday:    imgRDL,
 };
 
 const NUT_IMG = {
