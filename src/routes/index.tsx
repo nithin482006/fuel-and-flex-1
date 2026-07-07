@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
 
+// @ts-expect-error - JSX module without types
 const FuelAndFlex = lazy(() => import("@/components/FuelAndFlex.jsx"));
 
 export const Route = createFileRoute("/")({
