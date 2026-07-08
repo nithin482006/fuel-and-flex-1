@@ -77,14 +77,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Fuel & Flex — Training & Nutrition Tracker" },
+      { name: "description", content: "Track workouts, protein, water, sleep and creatine with a futuristic neon-green dashboard." },
+      { property: "og:title", content: "Fuel & Flex" },
+      { property: "og:description", content: "Track workouts, protein, water, sleep and creatine." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
