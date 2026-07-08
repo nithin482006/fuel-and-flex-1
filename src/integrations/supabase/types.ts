@@ -14,7 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          activity_level: string | null
+          age: number | null
+          bmi: number | null
+          bmi_category: string | null
+          created_at: string
+          fitness_goal: string | null
+          full_name: string | null
+          gender: string | null
+          height_cm: number | null
+          id: string
+          onboarding_completed: boolean
+          target_weight: number | null
+          updated_at: string
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          activity_level?: string | null
+          age?: number | null
+          bmi?: number | null
+          bmi_category?: string | null
+          created_at?: string
+          fitness_goal?: string | null
+          full_name?: string | null
+          gender?: string | null
+          height_cm?: number | null
+          id?: string
+          onboarding_completed?: boolean
+          target_weight?: number | null
+          updated_at?: string
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          activity_level?: string | null
+          age?: number | null
+          bmi?: number | null
+          bmi_category?: string | null
+          created_at?: string
+          fitness_goal?: string | null
+          full_name?: string | null
+          gender?: string | null
+          height_cm?: number | null
+          id?: string
+          onboarding_completed?: boolean
+          target_weight?: number | null
+          updated_at?: string
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
