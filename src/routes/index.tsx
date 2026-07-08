@@ -13,8 +13,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Fuel & Flex — Training & Nutrition Tracker" },
       { name: "description", content: "Track workouts, protein, water, sleep and creatine with a futuristic neon-green dashboard." },
-      { property: "og:title", content: "Fuel & Flex" },
-      { property: "og:description", content: "Track workouts, protein, water, sleep and creatine." },
+      { property: "og:title", content: "Fuel & Flex — Training & Nutrition Tracker" },
+      { property: "og:description", content: "Track workouts, protein, water, sleep and creatine with a futuristic neon-green dashboard." },
     ],
   }),
   component: Index,

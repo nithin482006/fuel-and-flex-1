@@ -79,10 +79,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Fuel & Flex — Training & Nutrition Tracker" },
       { name: "description", content: "Track workouts, protein, water, sleep and creatine with a futuristic neon-green dashboard." },
-      { property: "og:title", content: "Fuel & Flex" },
-      { property: "og:description", content: "Track workouts, protein, water, sleep and creatine." },
+      { property: "og:title", content: "Fuel & Flex — Training & Nutrition Tracker" },
+      { property: "og:description", content: "Track workouts, protein, water, sleep and creatine with a futuristic neon-green dashboard." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Fuel & Flex — Training & Nutrition Tracker" },
+      { name: "twitter:description", content: "Track workouts, protein, water, sleep and creatine with a futuristic neon-green dashboard." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/358f9ac0-a070-426f-9186-15f40dac5035/id-preview-79286ace--6291e4e1-94af-4f48-ada1-edfc2fb5ec9c.lovable.app-1783489496435.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/358f9ac0-a070-426f-9186-15f40dac5035/id-preview-79286ace--6291e4e1-94af-4f48-ada1-edfc2fb5ec9c.lovable.app-1783489496435.png" },
     ],
     links: [
       {
