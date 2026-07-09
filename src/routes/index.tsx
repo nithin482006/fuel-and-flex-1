@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "sonner";
-import { Loader2, User, LogOut, Activity, Target, Ruler, Weight } from "lucide-react";
+import { Loader2, User, LogOut, Activity, Target, Ruler, Weight, Utensils } from "lucide-react";
 
 // @ts-expect-error - JSX module without types
 const FuelAndFlex = lazy(() => import("@/components/FuelAndFlex.jsx"));
@@ -77,6 +77,9 @@ function Index() {
             <StatChip icon={<Weight className="w-3.5 h-3.5" />} label="Weight" value={`${profile.weight_kg} kg`} />
             <StatChip icon={<Activity className="w-3.5 h-3.5" />} label="BMI" value={`${profile.bmi ?? "—"} · ${profile.bmi_category ?? ""}`} highlight />
             {profile.fitness_goal && <StatChip icon={<Target className="w-3.5 h-3.5" />} label="Goal" value={goalLabel[profile.fitness_goal] ?? profile.fitness_goal} />}
+            <Link to="/macros" className="ml-1 h-9 px-3 rounded-full bg-emerald-500/10 border border-emerald-500/40 flex items-center gap-1.5 text-emerald-300 text-xs font-semibold hover:bg-emerald-500/20" title="Macros">
+              <Utensils className="w-3.5 h-3.5" />Macros
+            </Link>
             <Link to="/profile" className="ml-1 h-9 w-9 rounded-full bg-zinc-900 border border-emerald-500/30 flex items-center justify-center hover:bg-zinc-800 text-emerald-400" title="Profile">
               <User className="w-4 h-4" />
             </Link>
