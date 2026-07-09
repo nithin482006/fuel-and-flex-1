@@ -14,6 +14,177 @@ export type Database = {
   }
   public: {
     Tables: {
+      diary_entries: {
+        Row: {
+          calories: number
+          carbs: number
+          created_at: string
+          entry_date: string
+          fat: number
+          fiber: number
+          food_id: string | null
+          food_name: string
+          id: string
+          is_favorite: boolean
+          meal_type: string
+          protein: number
+          quantity: number
+          serving_size: number
+          serving_unit: string
+          user_food_id: string | null
+          user_id: string
+        }
+        Insert: {
+          calories?: number
+          carbs?: number
+          created_at?: string
+          entry_date?: string
+          fat?: number
+          fiber?: number
+          food_id?: string | null
+          food_name: string
+          id?: string
+          is_favorite?: boolean
+          meal_type: string
+          protein?: number
+          quantity?: number
+          serving_size?: number
+          serving_unit?: string
+          user_food_id?: string | null
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          carbs?: number
+          created_at?: string
+          entry_date?: string
+          fat?: number
+          fiber?: number
+          food_id?: string | null
+          food_name?: string
+          id?: string
+          is_favorite?: boolean
+          meal_type?: string
+          protein?: number
+          quantity?: number
+          serving_size?: number
+          serving_unit?: string
+          user_food_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diary_entries_food_id_fkey"
+            columns: ["food_id"]
+            isOneToOne: false
+            referencedRelation: "foods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diary_entries_user_food_id_fkey"
+            columns: ["user_food_id"]
+            isOneToOne: false
+            referencedRelation: "user_foods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      foods: {
+        Row: {
+          barcode: string | null
+          brand: string | null
+          calories: number
+          carbs: number
+          category: string
+          created_at: string
+          fat: number
+          fiber: number
+          id: string
+          name: string
+          protein: number
+          serving_size: number
+          serving_unit: string
+          sodium: number | null
+          sugar: number | null
+        }
+        Insert: {
+          barcode?: string | null
+          brand?: string | null
+          calories?: number
+          carbs?: number
+          category: string
+          created_at?: string
+          fat?: number
+          fiber?: number
+          id?: string
+          name: string
+          protein?: number
+          serving_size?: number
+          serving_unit?: string
+          sodium?: number | null
+          sugar?: number | null
+        }
+        Update: {
+          barcode?: string | null
+          brand?: string | null
+          calories?: number
+          carbs?: number
+          category?: string
+          created_at?: string
+          fat?: number
+          fiber?: number
+          id?: string
+          name?: string
+          protein?: number
+          serving_size?: number
+          serving_unit?: string
+          sodium?: number | null
+          sugar?: number | null
+        }
+        Relationships: []
+      }
+      nutrition_goals: {
+        Row: {
+          calorie_goal: number
+          carb_goal: number
+          created_at: string
+          fat_goal: number
+          fiber_goal: number
+          goal_type: string
+          id: string
+          is_custom: boolean
+          protein_goal: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          calorie_goal?: number
+          carb_goal?: number
+          created_at?: string
+          fat_goal?: number
+          fiber_goal?: number
+          goal_type?: string
+          id?: string
+          is_custom?: boolean
+          protein_goal?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          calorie_goal?: number
+          carb_goal?: number
+          created_at?: string
+          fat_goal?: number
+          fiber_goal?: number
+          goal_type?: string
+          id?: string
+          is_custom?: boolean
+          protein_goal?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           activity_level: string | null
@@ -65,6 +236,57 @@ export type Database = {
           updated_at?: string
           user_id?: string
           weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      user_foods: {
+        Row: {
+          brand: string | null
+          calories: number
+          carbs: number
+          category: string | null
+          created_at: string
+          fat: number
+          fiber: number
+          id: string
+          is_favorite: boolean
+          name: string
+          protein: number
+          serving_size: number
+          serving_unit: string
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          calories?: number
+          carbs?: number
+          category?: string | null
+          created_at?: string
+          fat?: number
+          fiber?: number
+          id?: string
+          is_favorite?: boolean
+          name: string
+          protein?: number
+          serving_size?: number
+          serving_unit?: string
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          calories?: number
+          carbs?: number
+          category?: string | null
+          created_at?: string
+          fat?: number
+          fiber?: number
+          id?: string
+          is_favorite?: boolean
+          name?: string
+          protein?: number
+          serving_size?: number
+          serving_unit?: string
+          user_id?: string
         }
         Relationships: []
       }
