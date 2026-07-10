@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast, Toaster } from "sonner";
 import {
   ArrowLeft, Loader2, Plus, Search, Trash2, Star, Copy, Calendar,
-  ChevronLeft, ChevronRight, Utensils, Sparkles, X, Save, BarChart3, Flame,
+  ChevronLeft, ChevronRight, Utensils, Sparkles, X, Save, BarChart3, Flame, Droplet, RotateCcw,
 } from "lucide-react";
 import { computeMacroTargets, MEALS, todayISO, addDaysISO, type MacroTargets } from "@/lib/macros";
 import {
