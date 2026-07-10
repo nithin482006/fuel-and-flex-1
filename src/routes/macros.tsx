@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast, Toaster } from "sonner";
 import {
   ArrowLeft, Loader2, Plus, Search, Trash2, Star, Copy, Calendar,
-  ChevronLeft, ChevronRight, Utensils, Sparkles, X, Save, BarChart3, Flame,
+  ChevronLeft, ChevronRight, Utensils, Sparkles, X, Save, BarChart3, Flame, Droplet, RotateCcw,
 } from "lucide-react";
 import { computeMacroTargets, MEALS, todayISO, addDaysISO, type MacroTargets } from "@/lib/macros";
 import {
@@ -42,6 +42,7 @@ function MacrosPage() {
   const [goals, setGoals] = useState<any>(null);
   const [date, setDate] = useState<string>(todayISO());
   const [entries, setEntries] = useState<Entry[]>([]);
+  const [waterLogs, setWaterLogs] = useState<{ id: string; amount_ml: number; created_at: string }[]>([]);
   const [pickerMeal, setPickerMeal] = useState<string | null>(null);
   const [showGoals, setShowGoals] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
@@ -88,6 +89,38 @@ function MacrosPage() {
     setEntries((data as Entry[]) || []);
   }, [userId, date]);
   useEffect(() => { loadEntries(); }, [loadEntries]);
+
+  const loadWater = useCallback(async () => {
+    if (!userId) return;
+    const { data } = await supabase.from("water_logs").select("id,amount_ml,created_at").eq("user_id", userId).eq("log_date", date).order("created_at");
+    setWaterLogs((data as any) || []);
+  }, [userId, date]);
+  useEffect(() => { loadWater(); }, [loadWater]);
+
+  // Realtime sync from other pages / devices
+  useEffect(() => {
+    if (!userId) return;
+    const ch = supabase.channel(`macros-sync-${userId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "diary_entries", filter: `user_id=eq.${userId}` }, () => loadEntries())
+      .on("postgres_changes", { event: "*", schema: "public", table: "water_logs", filter: `user_id=eq.${userId}` }, () => loadWater())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [userId, loadEntries, loadWater]);
+
+  const waterMl = useMemo(() => waterLogs.reduce((s, w) => s + Number(w.amount_ml || 0), 0), [waterLogs]);
+
+  async function addWater(ml: number) {
+    if (!userId || !ml) return;
+    const { error } = await supabase.from("water_logs").insert({ user_id: userId, log_date: date, amount_ml: ml });
+    if (error) return toast.error(error.message);
+    loadWater();
+  }
+  async function resetWater() {
+    if (!userId) return;
+    const { error } = await supabase.from("water_logs").delete().eq("user_id", userId).eq("log_date", date);
+    if (error) return toast.error(error.message);
+    loadWater();
+  }
 
   const totals = useMemo(() => entries.reduce((a, e) => ({
     calories: a.calories + Number(e.calories),
@@ -167,6 +200,14 @@ function MacrosPage() {
             <MacroCard label="Fiber"   unit="g" consumed={totals.fiber}   goal={target.fiber}   color="from-emerald-400 to-teal-300" />
           </div>
         </div>
+
+        {/* Water */}
+        <WaterCard
+          consumedMl={waterMl}
+          goalMl={Number(goals.water_goal_ml || 3500)}
+          onAdd={addWater}
+          onReset={resetWater}
+        />
 
         {/* Meals */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -310,6 +351,60 @@ function MacroCard({ label, unit, consumed, goal, color }: { label: string; unit
         <div className={`h-full rounded-full bg-gradient-to-r ${color}`} style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
       </div>
       <div className="mt-1 text-[11px] text-zinc-500">{Math.max(0, Math.round(goal - consumed))}{unit} remaining</div>
+    </div>
+  );
+}
+
+// ---------- Water tracking ----------
+function WaterCard({ consumedMl, goalMl, onAdd, onReset }: { consumedMl: number; goalMl: number; onAdd: (ml: number) => void; onReset: () => void }) {
+  const [manual, setManual] = useState<number>(200);
+  const pct = goalMl > 0 ? Math.min(100, (consumedMl / goalMl) * 100) : 0;
+  const remaining = Math.max(0, goalMl - consumedMl);
+  const r = 60; const c = 2 * Math.PI * r;
+  const goalReached = consumedMl >= goalMl;
+  return (
+    <div className={`rounded-2xl border ${goalReached ? "border-emerald-500/50" : "border-sky-500/25"} bg-gradient-to-br from-sky-500/10 to-transparent p-5 mb-6`}>
+      <div className="flex items-center gap-2 mb-4">
+        <Droplet className="w-4 h-4 text-sky-400" />
+        <h3 className="font-bold text-white">Water Intake</h3>
+        {goalReached && <span className="ml-2 text-[10px] font-bold uppercase tracking-widest text-emerald-400">Goal reached ✓</span>}
+      </div>
+      <div className="flex flex-wrap items-center gap-5">
+        <div className="relative shrink-0">
+          <svg width="150" height="150" viewBox="0 0 150 150" className="-rotate-90">
+            <circle cx="75" cy="75" r={r} strokeWidth="12" stroke="rgb(39,39,42)" fill="none" />
+            <circle cx="75" cy="75" r={r} strokeWidth="12" stroke="url(#gradW)" fill="none"
+              strokeDasharray={c} strokeDashoffset={c - (c * pct) / 100} strokeLinecap="round"
+              style={{ transition: "stroke-dashoffset 0.6s ease" }} />
+            <defs><linearGradient id="gradW" x1="0" x2="1"><stop offset="0" stopColor="#38bdf8" /><stop offset="1" stopColor="#22d3ee" /></linearGradient></defs>
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="text-2xl font-black text-white tabular-nums">{(consumedMl / 1000).toFixed(2)}L</div>
+            <div className="text-[10px] uppercase tracking-widest text-zinc-500">{Math.round(pct)}%</div>
+          </div>
+        </div>
+        <div className="min-w-0 flex-1">
+          <Row label="Goal" value={`${(goalMl / 1000).toFixed(2)} L`} />
+          <Row label="Consumed" value={`${(consumedMl / 1000).toFixed(2)} L`} />
+          <Row label="Remaining" value={`${(remaining / 1000).toFixed(2)} L`} highlight />
+        </div>
+        <div className="w-full">
+          <div className="grid grid-cols-4 gap-2 mb-2">
+            {[250, 500, 750, 1000].map((ml) => (
+              <button key={ml} onClick={() => onAdd(ml)}
+                className="h-10 rounded-lg border border-sky-500/30 bg-sky-500/10 text-sky-300 text-xs font-semibold hover:bg-sky-500/20 hover:border-sky-400 transition">
+                +{ml < 1000 ? `${ml}ml` : `${ml / 1000}L`}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <input type="number" min={1} value={manual} onChange={(e) => setManual(+e.target.value)}
+              className="flex-1 h-10 rounded-lg bg-zinc-900 border border-zinc-800 focus:border-sky-500 outline-none px-3 text-sm text-white" placeholder="ml" />
+            <button onClick={() => manual > 0 && onAdd(manual)} className="h-10 px-4 rounded-lg bg-gradient-to-r from-sky-400 to-cyan-500 text-black font-bold text-sm flex items-center gap-1"><Plus className="w-4 h-4" />Add</button>
+            <button onClick={onReset} title="Reset today's water" className="h-10 w-10 rounded-lg border border-zinc-800 hover:border-red-500/40 text-zinc-400 hover:text-red-400 flex items-center justify-center"><RotateCcw className="w-4 h-4" /></button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -495,13 +590,14 @@ function GoalsModal({ profile, goals, onClose, onSaved }: { profile: any; goals:
     carb_goal: goals?.carb_goal ?? auto.carbs,
     fat_goal: goals?.fat_goal ?? auto.fat,
     fiber_goal: goals?.fiber_goal ?? auto.fiber,
+    water_goal_ml: goals?.water_goal_ml ?? 3500,
   });
   const [busy, setBusy] = useState(false);
 
   async function save() {
     setBusy(true);
     const payload = mode === "auto"
-      ? { is_custom: false, goal_type: "auto", calorie_goal: auto.calories, protein_goal: auto.protein, carb_goal: auto.carbs, fat_goal: auto.fat, fiber_goal: auto.fiber }
+      ? { is_custom: false, goal_type: "auto", calorie_goal: auto.calories, protein_goal: auto.protein, carb_goal: auto.carbs, fat_goal: auto.fat, fiber_goal: auto.fiber, water_goal_ml: f.water_goal_ml }
       : { is_custom: true, goal_type: "custom", ...f };
     const { data, error } = await supabase.from("nutrition_goals").update(payload).eq("user_id", goals.user_id).select().single();
     setBusy(false);
@@ -536,12 +632,17 @@ function GoalsModal({ profile, goals, onClose, onSaved }: { profile: any; goals:
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-3">
-              {(["calorie_goal","protein_goal","carb_goal","fat_goal","fiber_goal"] as const).map((k) => (
+              {(["calorie_goal","protein_goal","carb_goal","fat_goal","fiber_goal","water_goal_ml"] as const).map((k) => (
                 <Field key={k} label={k.replace("_goal","").replace("carb","carbs")}>
                   <input type="number" min="0" value={(f as any)[k]} onChange={(e) => setF({ ...f, [k]: +e.target.value })} className={inp} />
                 </Field>
               ))}
             </div>
+          )}
+          {mode === "auto" && (
+            <Field label="Water goal (ml)">
+              <input type="number" min={500} value={f.water_goal_ml} onChange={(e) => setF({ ...f, water_goal_ml: +e.target.value })} className={inp} />
+            </Field>
           )}
           <button onClick={save} disabled={busy} className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-bold flex items-center justify-center gap-2 disabled:opacity-50">
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}Save goals
