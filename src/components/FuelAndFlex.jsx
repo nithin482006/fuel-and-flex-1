@@ -1322,16 +1322,24 @@ function SleepRow({log,onChange}) {
 /* ══════════════════════════════════════════════════════════════
    DASHBOARD
    ══════════════════════════════════════════════════════════════ */
-function Dashboard({data, updateDaily, setTab, streak}) {
+function Dashboard({data, updateDaily, setTab, streak, nutrition}) {
   const tk=todayKey(), log=getDailyLog(data,tk);
   const wd=weekdayOf(tk), isRest=wd==="Sunday";
   const dayData=getDayData(data,wd), neon=DAY_NEON[wd];
 
+  // Shared nutrition source of truth (Supabase-backed)
+  const proteinG = Math.round(nutrition?.totals?.protein ?? 0);
+  const proteinGoal = Math.round(nutrition?.goals?.protein ?? GOALS.proteinMin);
+  const waterMl = Math.round(nutrition?.waterMl ?? 0);
+  const waterGoal = Math.round(nutrition?.goals?.water ?? GOALS.waterMin);
+  const proteinDone = proteinG >= proteinGoal && proteinGoal > 0;
+  const waterDone = waterMl >= waterGoal && waterGoal > 0;
+
   const allDone = isDayComplete(log);
   const plates=[
     {done:!!log.creatine,         color:"var(--neon)"},
-    {done:log.proteinG>=GOALS.proteinMin, color:"var(--cyan)"},
-    {done:log.waterMl>=GOALS.waterMin,    color:"#00BFFF"},
+    {done:proteinDone, color:"var(--cyan)"},
+    {done:waterDone,   color:"#00BFFF"},
     {done:log.sleepHours!=null&&log.sleepHours>=GOALS.sleepMin, color:"var(--purple)"},
   ];
 
@@ -1406,15 +1414,15 @@ function Dashboard({data, updateDaily, setTab, streak}) {
           onTap={()=>updateDaily(tk,{creatine:!log.creatine})}/>
         <ChecklistRow
           icon={<Dumbbell size={16} color="var(--cyan)"/>}
-          label="Protein" sub={`${log.proteinG}g of ${GOALS.proteinMin}–${GOALS.proteinMax}g goal`}
+          label="Protein" sub={`${proteinG}g of ${proteinGoal}g goal${proteinDone ? " · complete ✓" : ""}`}
           hint="Protein is the raw material your muscles rebuild with"
-          done={log.proteinG>=GOALS.proteinMin}
+          done={proteinDone}
           onTap={()=>setTab("nutrition")}/>
         <ChecklistRow
           icon={<Droplet size={16} color="#00BFFF"/>}
-          label="Water" sub={`${(log.waterMl/1000).toFixed(1)}L of ${GOALS.waterMin/1000}–${GOALS.waterMax/1000}L goal`}
+          label="Water" sub={`${(waterMl/1000).toFixed(2)}L of ${(waterGoal/1000).toFixed(2)}L goal${waterDone ? " · complete ✓" : ""}`}
           hint="Even mild dehydration cuts strength by ~10%"
-          done={log.waterMl>=GOALS.waterMin}
+          done={waterDone}
           onTap={()=>setTab("nutrition")}/>
         <SleepRow log={log} onChange={h=>updateDaily(tk,{sleepHours:h})}/>
       </div>
