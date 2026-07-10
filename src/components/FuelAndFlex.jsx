@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import {
   Home, Dumbbell, Utensils, TrendingUp, Flame, Droplet, Moon, Check, Plus,
