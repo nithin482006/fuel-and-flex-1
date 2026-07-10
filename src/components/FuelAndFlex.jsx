@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
+import { useDailyNutrition } from "@/hooks/useDailyNutrition";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Home, Dumbbell, Utensils, TrendingUp, Flame, Droplet, Moon, Check, Plus,
   X, ChevronLeft, ChevronRight, Clock, Sparkles, Info, RotateCcw,
   Pause, Play, SkipForward, Edit2, Trash2, Save, ChevronUp, ChevronDown, Zap,
+  Trophy, Target, Weight,
 } from "lucide-react";
 
 /* ============================================================
