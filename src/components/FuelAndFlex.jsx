@@ -1563,92 +1563,365 @@ function NutritionTab({data, updateDaily}) {
 /* ══════════════════════════════════════════════════════════════
    PROGRESS TAB
    ══════════════════════════════════════════════════════════════ */
-function weekStats(data,tk) {
-  const mon=mondayOf(tk), days=Array.from({length:7},(_,i)=>shiftKey(mon,i));
-  const today=todayKey(), elapsed=days.filter(d=>d<=today);
-  let wOut=0,pS=0,wS=0,sS=0,pC=0,wC=0,sC=0,crC=0;
-  days.forEach(d=>{
-    const wl=data.workoutLogs[d];
-    if(wl&&Object.values(wl.exercises||{}).some(e=>e.sets?.length>0)) wOut++;
-    const dl=data.dailyLogs[d];
-    if(dl){
-      if(dl.proteinG>0){pS+=dl.proteinG;pC++;}
-      if(dl.waterMl>0){wS+=dl.waterMl;wC++;}
-      if(dl.sleepHours!=null){sS+=dl.sleepHours;sC++;}
-      if(dl.creatine) crC++;
-    }
-  });
-  return {
-    workouts:wOut,
-    avgProtein:pC?Math.round(pS/pC):0,
-    avgWater:wC?Math.round(wS/wC):0,
-    avgSleep:sC?(sS/sC).toFixed(1):"—",
-    creatineAdh:elapsed.length?Math.round(crC/elapsed.length*100):0,
-  };
-}
+/* Comprehensive analytics dashboard – reads workout localstorage + Supabase diary/water/weight */
+function ProgressTab({data, onReset, nutrition}) {
+  const [range, setRange] = useState("weekly"); // daily | weekly | monthly | yearly
+  const rangeDays = range === "daily" ? 7 : range === "weekly" ? 28 : range === "monthly" ? 90 : 365;
+  const [diary, setDiary] = useState([]);       // rows {entry_date, calories, protein, carbs, fat, fiber}
+  const [waters, setWaters] = useState([]);      // rows {log_date, amount_ml}
+  const [weights, setWeights] = useState([]);    // rows {recorded_at, weight_kg, bmi}
 
-function ProgressTab({data, onReset}) {
-  const tk=todayKey(), stats=weekStats(data,tk);
-  const allNames=[...new Set(Object.values(DEFAULT_SPLIT).flatMap(d=>d.exercises.map(e=>e.name)))];
-  const [sel,setSel]=useState(allNames[0]);
-  const hist=buildHistory(data,sel);
-  const chartData=hist.map(h=>({date:h.date.slice(5),weight:h.topWeight}));
+  const uid = nutrition?.userId;
+
+  const loadRemote = useCallback(async () => {
+    if (!uid) return;
+    const start = shiftKey(todayKey(), -rangeDays + 1);
+    const [{data: d}, {data: w}, {data: wh}] = await Promise.all([
+      supabase.from("diary_entries").select("entry_date,calories,protein,carbs,fat,fiber").eq("user_id", uid).gte("entry_date", start),
+      supabase.from("water_logs").select("log_date,amount_ml").eq("user_id", uid).gte("log_date", start),
+      supabase.from("weight_history").select("recorded_at,weight_kg,bmi").eq("user_id", uid).order("recorded_at"),
+    ]);
+    setDiary(d || []); setWaters(w || []); setWeights(wh || []);
+  }, [uid, rangeDays]);
+
+  useEffect(() => { loadRemote(); }, [loadRemote]);
+  useEffect(() => {
+    if (!uid) return;
+    const ch = supabase.channel(`stats-sync-${uid}`)
+      .on("postgres_changes", {event:"*", schema:"public", table:"diary_entries", filter:`user_id=eq.${uid}`}, () => loadRemote())
+      .on("postgres_changes", {event:"*", schema:"public", table:"water_logs", filter:`user_id=eq.${uid}`}, () => loadRemote())
+      .on("postgres_changes", {event:"*", schema:"public", table:"weight_history", filter:`user_id=eq.${uid}`}, () => loadRemote())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [uid, loadRemote]);
+
+  // Build day-by-day arrays over rangeDays
+  const days = useMemo(() => Array.from({length: rangeDays}, (_, i) => shiftKey(todayKey(), -(rangeDays - 1 - i))), [rangeDays]);
+
+  // Workout stats
+  const workoutStats = useMemo(() => {
+    let sessions = 0, sets = 0, reps = 0, weightLifted = 0;
+    const dayCounts = days.map(d => {
+      const wl = data.workoutLogs[d];
+      const done = wl && Object.values(wl.exercises||{}).some(e => e.sets?.length>0);
+      if (done) sessions++;
+      let s=0,r=0,w=0;
+      Object.values(wl?.exercises||{}).forEach(ex => {
+        (ex.sets||[]).forEach(st => { s++; r+=Number(st.reps||0); w+=Number(st.reps||0)*Number(st.weight||0); });
+      });
+      sets+=s; reps+=r; weightLifted+=w;
+      return { date: d.slice(5), sessions: done?1:0, sets:s, reps:r, volume:w };
+    });
+    // streak
+    let streak = 0;
+    for (let i = days.length - 1; i >= 0; i--) {
+      if (dayCounts[i].sessions) streak++; else break;
+    }
+    // per week / per month
+    const perWeek = Math.round((sessions / Math.max(1, rangeDays)) * 7 * 10) / 10;
+    const perMonth = Math.round((sessions / Math.max(1, rangeDays)) * 30);
+    return { sessions, sets, reps, weightLifted, dayCounts, streak, perWeek, perMonth, completion: Math.round(sessions/Math.max(1, rangeDays)*100) };
+  }, [data, days, rangeDays]);
+
+  // Nutrition series
+  const nutritionSeries = useMemo(() => {
+    const m = new Map(days.map(d => [d, {date: d.slice(5), calories:0, protein:0, carbs:0, fat:0, fiber:0, water:0}]));
+    diary.forEach(e => { const r = m.get(e.entry_date); if(!r) return;
+      r.calories+=Number(e.calories||0); r.protein+=Number(e.protein||0);
+      r.carbs+=Number(e.carbs||0); r.fat+=Number(e.fat||0); r.fiber+=Number(e.fiber||0); });
+    waters.forEach(w => { const r = m.get(w.log_date); if(!r) return; r.water += Number(w.amount_ml||0); });
+    return Array.from(m.values());
+  }, [diary, waters, days]);
+
+  const avg = (arr, k) => arr.length ? Math.round(arr.reduce((a,r)=>a+r[k],0)/arr.length) : 0;
+  const totalToday = nutritionSeries[nutritionSeries.length-1] || {calories:0,protein:0,carbs:0,fat:0,fiber:0,water:0};
+
+  const weightSeries = useMemo(() => weights.map(w => ({
+    date: (w.recorded_at || "").slice(5,10),
+    weight: Number(w.weight_kg),
+    bmi: Number(w.bmi),
+  })), [weights]);
+
+  const profile = nutrition?.profile;
+  const startingW = profile?.starting_weight_kg ?? profile?.weight_kg;
+  const currentW  = profile?.weight_kg;
+  const targetW   = profile?.target_weight_kg;
+
+  // Personal records
+  const PR_LIFTS = ["Barbell Bench Press","Squat","Barbell Squat","Romanian Deadlift","Seated Dumbbell Shoulder Press"];
+  const prs = useMemo(() => {
+    const out = {};
+    Object.values(data.workoutLogs||{}).forEach(wl => {
+      Object.entries(wl.exercises||{}).forEach(([name, ex]) => {
+        (ex.sets||[]).forEach(s => {
+          const w = Number(s.weight||0); if(!w) return;
+          if (!out[name] || w > out[name]) out[name] = w;
+        });
+      });
+    });
+    return out;
+  }, [data]);
+
+  // Exercise progress selector
+  const allNames = useMemo(() => [...new Set(Object.values(DEFAULT_SPLIT).flatMap(d => d.exercises.map(e=>e.name)))], []);
+  const [selEx, setSelEx] = useState(allNames[0]);
+  const exHistory = useMemo(() => buildHistory(data, selEx), [data, selEx]);
+  const exBestWeight = exHistory.reduce((m,h)=>Math.max(m,h.topWeight),0);
+  const exSeries = useMemo(() => {
+    // include reps + volume from raw logs
+    const rows = [];
+    Object.keys(data.workoutLogs||{}).sort().forEach(date => {
+      const ex = data.workoutLogs[date]?.exercises?.[selEx];
+      if (!ex?.sets?.length) return;
+      const weights = ex.sets.filter(s=>s.weight!=null);
+      if (!weights.length) return;
+      const topWeight = Math.max(...weights.map(s=>s.weight));
+      const bestReps = Math.max(...ex.sets.map(s=>Number(s.reps||0)));
+      const volume = ex.sets.reduce((a,s)=>a+Number(s.reps||0)*Number(s.weight||0),0);
+      rows.push({date: date.slice(5), weight: topWeight, reps: bestReps, volume});
+    });
+    return rows.slice(-20);
+  }, [data, selEx]);
+  const exBestReps = exSeries.reduce((m,r)=>Math.max(m,r.reps||0),0);
+  const exTotalVolume = exSeries.reduce((a,r)=>a+r.volume,0);
+
+  const g = nutrition?.goals || {calories:2200,protein:130,carbs:250,fat:70,fiber:30,water:3500};
 
   return (
     <>
+      {/* Range filter */}
       <div className="card">
-        <div className="card-label">This Week's Progress</div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-          <StatCell label="Sessions Done"    value={`${stats.workouts}/6`}    color="var(--neon)"/>
-          <StatCell label="Creatine Days"    value={`${stats.creatineAdh}%`}  color="var(--neon)"/>
-          <StatCell label="Avg Protein"      value={`${stats.avgProtein}g`}   color="var(--cyan)"/>
-          <StatCell label="Avg Water"        value={`${(stats.avgWater/1000).toFixed(1)}L`} color="#00BFFF"/>
-          <StatCell label="Avg Sleep"        value={`${stats.avgSleep}h`}     color="var(--purple)"/>
+        <div className="card-label">Range</div>
+        <div style={{display:"flex", gap:6, flexWrap:"wrap"}}>
+          {[["daily","Daily"],["weekly","Weekly"],["monthly","Monthly"],["yearly","Yearly"]].map(([k,l])=>(
+            <button key={k} className="btn btn-sm" onClick={()=>setRange(k)}
+              style={{flex:1, minWidth:70,
+                background: range===k?"rgba(0,255,135,0.15)":"transparent",
+                borderColor: range===k?"var(--neon)":"var(--bdr)",
+                color: range===k?"var(--neon)":"var(--text-2)"}}>{l}</button>
+          ))}
         </div>
       </div>
 
-      <div className="card">
-        <div className="card-label">Strength Over Time</div>
-        <div style={{fontSize:11,color:"var(--text-3)",marginBottom:10,fontFamily:"var(--font-m)"}}>
-          Select an exercise to see your top weight per session
+      {/* Overall workout progress */}
+      <div className="card card-glow">
+        <div className="card-label">Workout Progress</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10, marginBottom:12}}>
+          <StatCell label="Sessions"     value={workoutStats.sessions}       color="var(--neon)"/>
+          <StatCell label="Streak"       value={`${workoutStats.streak}d`}   color="var(--yellow)"/>
+          <StatCell label="Per Week"     value={workoutStats.perWeek}        color="var(--cyan)"/>
+          <StatCell label="Per Month"    value={workoutStats.perMonth}       color="var(--purple)"/>
+          <StatCell label="Completion"   value={`${workoutStats.completion}%`} color="var(--neon)"/>
+          <StatCell label="Volume (kg)"  value={Math.round(workoutStats.weightLifted)} color="var(--cyan)"/>
         </div>
-        <select value={sel} onChange={e=>setSel(e.target.value)} style={{marginBottom:12}}>
+        <div style={{height:150}}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={workoutStats.dayCounts}>
+              <CartesianGrid stroke="rgba(0,255,135,0.06)" strokeDasharray="3 3" vertical={false}/>
+              <XAxis dataKey="date" tick={{fontSize:9,fill:"var(--text-2)"}} axisLine={{stroke:"var(--bdr)"}} tickLine={false}/>
+              <YAxis tick={{fontSize:9,fill:"var(--text-2)"}} axisLine={false} tickLine={false} width={28}/>
+              <Tooltip contentStyle={{background:"var(--surf)",border:"1px solid var(--bdr2)",fontSize:11,borderRadius:9}}/>
+              <Bar dataKey="volume" fill="var(--neon)" name="Volume (kg)"/>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Body weight */}
+      <div className="card">
+        <div className="card-label">Body Weight Progress</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10}}>
+          <MiniStat label="Starting" value={startingW ? `${startingW} kg` : "—"} />
+          <MiniStat label="Current"  value={currentW ? `${currentW} kg` : "—"} accent />
+          <MiniStat label="Target"   value={targetW ? `${targetW} kg` : "Set in profile"} />
+        </div>
+        {weightSeries.length>0 ? (
+          <div style={{height:150}}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={weightSeries}>
+                <CartesianGrid stroke="rgba(0,255,135,0.06)" strokeDasharray="3 3" vertical={false}/>
+                <XAxis dataKey="date" tick={{fontSize:9,fill:"var(--text-2)"}} axisLine={{stroke:"var(--bdr)"}} tickLine={false}/>
+                <YAxis tick={{fontSize:9,fill:"var(--text-2)"}} axisLine={false} tickLine={false} width={28} domain={["dataMin-1","dataMax+1"]}/>
+                <Tooltip contentStyle={{background:"var(--surf)",border:"1px solid var(--bdr2)",fontSize:11,borderRadius:9}}/>
+                <Line type="monotone" dataKey="weight" stroke="var(--yellow)" strokeWidth={2} dot={{r:3,fill:"var(--yellow)"}}/>
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        ) : <EmptyLine text="No weight snapshots yet. Update your profile weight to start tracking." />}
+      </div>
+
+      {/* BMI */}
+      <div className="card">
+        <div className="card-label">BMI Progress</div>
+        {weightSeries.filter(w=>w.bmi).length>0 ? (
+          <div style={{height:150}}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={weightSeries}>
+                <CartesianGrid stroke="rgba(0,255,135,0.06)" strokeDasharray="3 3" vertical={false}/>
+                <XAxis dataKey="date" tick={{fontSize:9,fill:"var(--text-2)"}} axisLine={{stroke:"var(--bdr)"}} tickLine={false}/>
+                <YAxis tick={{fontSize:9,fill:"var(--text-2)"}} axisLine={false} tickLine={false} width={28} domain={["dataMin-1","dataMax+1"]}/>
+                <Tooltip contentStyle={{background:"var(--surf)",border:"1px solid var(--bdr2)",fontSize:11,borderRadius:9}}/>
+                <Line type="monotone" dataKey="bmi" stroke="var(--purple)" strokeWidth={2} dot={{r:3,fill:"var(--purple)"}}/>
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        ) : <EmptyLine text="BMI history will appear after your first weight update." />}
+      </div>
+
+      {/* Calories */}
+      <div className="card">
+        <div className="card-label">Calories</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10}}>
+          <MiniStat label="Today"   value={`${Math.round(totalToday.calories)} kcal`} accent />
+          <MiniStat label="Avg"     value={`${avg(nutritionSeries,"calories")}`} />
+          <MiniStat label="Goal"    value={`${g.calories}`} />
+        </div>
+        <div style={{height:150}}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={nutritionSeries}>
+              <CartesianGrid stroke="rgba(0,255,135,0.06)" strokeDasharray="3 3" vertical={false}/>
+              <XAxis dataKey="date" tick={{fontSize:9,fill:"var(--text-2)"}} axisLine={{stroke:"var(--bdr)"}} tickLine={false}/>
+              <YAxis tick={{fontSize:9,fill:"var(--text-2)"}} axisLine={false} tickLine={false} width={28}/>
+              <Tooltip contentStyle={{background:"var(--surf)",border:"1px solid var(--bdr2)",fontSize:11,borderRadius:9}}/>
+              <Bar dataKey="calories" fill="var(--cyan)"/>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Macros */}
+      <div className="card">
+        <div className="card-label">Macronutrients</div>
+        <MacroSection label="Protein" data={nutritionSeries} dataKey="protein" color="#FF7A9E" goal={g.protein} today={totalToday.protein}/>
+        <MacroSection label="Carbs"   data={nutritionSeries} dataKey="carbs"   color="#FFD60A" goal={g.carbs}   today={totalToday.carbs}/>
+        <MacroSection label="Fat"     data={nutritionSeries} dataKey="fat"     color="var(--purple)" goal={g.fat}     today={totalToday.fat}/>
+        <MacroSection label="Fiber"   data={nutritionSeries} dataKey="fiber"   color="var(--neon)"   goal={g.fiber}   today={totalToday.fiber}/>
+      </div>
+
+      {/* Water */}
+      <div className="card">
+        <div className="card-label">Water Intake</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10}}>
+          <MiniStat label="Today"   value={`${(totalToday.water/1000).toFixed(2)} L`} accent />
+          <MiniStat label="Avg"     value={`${(avg(nutritionSeries,"water")/1000).toFixed(2)} L`} />
+          <MiniStat label="Goal"    value={`${(g.water/1000).toFixed(2)} L`} />
+        </div>
+        <div style={{height:150}}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={nutritionSeries}>
+              <CartesianGrid stroke="rgba(0,255,135,0.06)" strokeDasharray="3 3" vertical={false}/>
+              <XAxis dataKey="date" tick={{fontSize:9,fill:"var(--text-2)"}} axisLine={{stroke:"var(--bdr)"}} tickLine={false}/>
+              <YAxis tick={{fontSize:9,fill:"var(--text-2)"}} axisLine={false} tickLine={false} width={28}/>
+              <Tooltip contentStyle={{background:"var(--surf)",border:"1px solid var(--bdr2)",fontSize:11,borderRadius:9}}/>
+              <Bar dataKey="water" fill="#00BFFF" name="Water (ml)"/>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Exercise progress */}
+      <div className="card">
+        <div className="card-label">Exercise Progress</div>
+        <select value={selEx} onChange={e=>setSelEx(e.target.value)} style={{marginBottom:12}}>
           {Object.entries(DEFAULT_SPLIT).filter(([d])=>d!=="Sunday").map(([d,info])=>(
             <optgroup key={d} label={`${d} — ${info.label}`}>
               {info.exercises.map(e=><option key={e.name} value={e.name}>{e.name}</option>)}
             </optgroup>
           ))}
         </select>
-        {chartData.length>0?(
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10}}>
+          <MiniStat label="Best Weight" value={exBestWeight ? `${exBestWeight} kg` : "—"} accent/>
+          <MiniStat label="Best Reps"   value={exBestReps || "—"} />
+          <MiniStat label="Volume"      value={exTotalVolume ? `${Math.round(exTotalVolume)} kg` : "—"} />
+        </div>
+        {exSeries.length ? (
           <div style={{height:150}}>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
+              <LineChart data={exSeries}>
                 <CartesianGrid stroke="rgba(0,255,135,0.06)" strokeDasharray="3 3" vertical={false}/>
                 <XAxis dataKey="date" tick={{fontSize:9,fill:"var(--text-2)"}} axisLine={{stroke:"var(--bdr)"}} tickLine={false}/>
                 <YAxis tick={{fontSize:9,fill:"var(--text-2)"}} axisLine={false} tickLine={false} width={28}/>
                 <Tooltip contentStyle={{background:"var(--surf)",border:"1px solid var(--bdr2)",fontSize:11,borderRadius:9}}/>
-                <Line type="monotone" dataKey="weight" stroke="var(--neon)" strokeWidth={2} dot={{r:3,fill:"var(--neon)"}}
-                  style={{filter:"drop-shadow(0 0 3px var(--neon))"}}/>
+                <Legend wrapperStyle={{fontSize:10}}/>
+                <Line type="monotone" dataKey="weight" stroke="var(--neon)" strokeWidth={2} dot={{r:3,fill:"var(--neon)"}}/>
+                <Line type="monotone" dataKey="volume" stroke="var(--cyan)" strokeWidth={2} dot={{r:3,fill:"var(--cyan)"}}/>
               </LineChart>
             </ResponsiveContainer>
           </div>
-        ):(
-          <div style={{textAlign:"center",padding:"20px 0",color:"var(--text-3)",fontSize:12,fontFamily:"var(--font-m)"}}>
-            No sessions logged yet for this exercise. Start lifting to see your curve here.
-          </div>
-        )}
+        ) : <EmptyLine text="Log sets for this exercise to see progression." />}
       </div>
 
-      <div className="card" style={{fontSize:12,color:"var(--text-3)",fontFamily:"var(--font-m)"}}>
-        Bodyweight tracking &amp; health-app sync coming in v2 🚀
+      {/* Personal Records */}
+      <div className="card">
+        <div className="card-label" style={{display:"flex",alignItems:"center",gap:6}}>
+          <Trophy size={12} color="var(--yellow)"/> Personal Records
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr",gap:6}}>
+          {[
+            ["Bench Press",           prs["Barbell Bench Press"]],
+            ["Squat",                 prs["Barbell Squat"] || prs["Squat"]],
+            ["Deadlift (RDL top set)",prs["Romanian Deadlift"]],
+            ["Overhead Press",        prs["Seated Dumbbell Shoulder Press"]],
+          ].map(([label,val]) => (
+            <div key={label} style={{display:"flex",alignItems:"center",justifyContent:"space-between",
+              padding:"10px 12px",borderRadius:10,border:"1px solid var(--bdr)",background:"var(--surf)"}}>
+              <span style={{fontSize:12,color:"var(--text-2)"}}>{label}</span>
+              <span style={{fontFamily:"var(--font-m)",fontWeight:700,fontSize:14,
+                color: val?"var(--yellow)":"var(--text-3)",
+                textShadow: val?"0 0 8px rgba(255,214,10,0.4)":"none"}}>
+                {val ? `${val} kg` : "—"}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       <button className="btn btn-ghost btn-sm"
         style={{width:"100%",justifyContent:"center",color:"var(--text-3)",marginTop:4}}
         onClick={onReset}>
-        <RotateCcw size={12}/> Reset all logged data
+        <RotateCcw size={12}/> Reset all logged workout data
       </button>
     </>
+  );
+}
+
+function MiniStat({label,value,accent}) {
+  return (
+    <div style={{padding:"10px 8px", borderRadius:10, border:"1px solid var(--bdr)", background:"var(--surf)"}}>
+      <div style={{fontSize:9,color:"var(--text-3)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>{label}</div>
+      <div style={{fontFamily:"var(--font-m)",fontWeight:700,fontSize:15,
+        color: accent?"var(--neon)":"var(--text)",
+        textShadow: accent?"0 0 6px rgba(0,255,135,0.4)":"none"}}>{value}</div>
+    </div>
+  );
+}
+
+function EmptyLine({text}) {
+  return <div style={{textAlign:"center",padding:"18px 0",color:"var(--text-3)",fontSize:11,fontFamily:"var(--font-m)"}}>{text}</div>;
+}
+
+function MacroSection({label, data, dataKey, color, goal, today}) {
+  const avgVal = data.length ? Math.round(data.reduce((a,r)=>a+r[dataKey],0)/data.length) : 0;
+  return (
+    <div style={{marginTop:10, paddingTop:10, borderTop:"1px solid var(--bdr)"}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
+        <div style={{fontSize:12,fontWeight:600,color:"var(--text)"}}>{label}</div>
+        <div style={{fontFamily:"var(--font-m)",fontSize:10,color:"var(--text-2)"}}>
+          Today <b style={{color: today>=goal?"var(--neon)":"var(--text)"}}>{Math.round(today)}g</b> ·
+          Avg <b>{avgVal}g</b> · Goal <b>{Math.round(goal)}g</b>
+        </div>
+      </div>
+      <div style={{height:70}}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data}>
+            <XAxis dataKey="date" hide/>
+            <YAxis hide/>
+            <Tooltip contentStyle={{background:"var(--surf)",border:"1px solid var(--bdr2)",fontSize:10,borderRadius:9}}/>
+            <Line type="monotone" dataKey={dataKey} stroke={color} strokeWidth={2} dot={false}/>
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 }
 
