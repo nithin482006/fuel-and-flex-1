@@ -1944,6 +1944,7 @@ export default function App() {
   const [dateKey, setDateKey] = useState(todayKey());
   const [editDay, setEditDay] = useState(null);
   const navigate = useNavigate();
+  const nutrition = useDailyNutrition();
 
   const handleSetTab = useCallback((next) => {
     if (next === "nutrition") {
@@ -2021,9 +2022,9 @@ export default function App() {
       <div className="ff-shell">
         <Header/>
         <div className="ff-scroll">
-          {tab==="dashboard" && <Dashboard data={data} updateDaily={updateDaily} setTab={handleSetTab} streak={streak}/>}
+          {tab==="dashboard" && <Dashboard data={data} updateDaily={updateDaily} setTab={handleSetTab} streak={streak} nutrition={nutrition}/>}
           {tab==="workout"   && <WorkoutTab data={data} dateKey={dateKey} setDateKey={setDateKey} logSet={logSet} exerciseHistory={exerciseHistory} onOpenEditor={openEditor}/>}
-          {tab==="progress"  && <ProgressTab data={data} onReset={resetAll}/>}
+          {tab==="progress"  && <ProgressTab data={data} onReset={resetAll} nutrition={nutrition}/>}
         </div>
         <BottomNav tab={tab} setTab={handleSetTab}/>
 
