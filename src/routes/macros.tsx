@@ -42,6 +42,7 @@ function MacrosPage() {
   const [goals, setGoals] = useState<any>(null);
   const [date, setDate] = useState<string>(todayISO());
   const [entries, setEntries] = useState<Entry[]>([]);
+  const [waterLogs, setWaterLogs] = useState<{ id: string; amount_ml: number; created_at: string }[]>([]);
   const [pickerMeal, setPickerMeal] = useState<string | null>(null);
   const [showGoals, setShowGoals] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
@@ -88,6 +89,38 @@ function MacrosPage() {
     setEntries((data as Entry[]) || []);
   }, [userId, date]);
   useEffect(() => { loadEntries(); }, [loadEntries]);
+
+  const loadWater = useCallback(async () => {
+    if (!userId) return;
+    const { data } = await supabase.from("water_logs").select("id,amount_ml,created_at").eq("user_id", userId).eq("log_date", date).order("created_at");
+    setWaterLogs((data as any) || []);
+  }, [userId, date]);
+  useEffect(() => { loadWater(); }, [loadWater]);
+
+  // Realtime sync from other pages / devices
+  useEffect(() => {
+    if (!userId) return;
+    const ch = supabase.channel(`macros-sync-${userId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "diary_entries", filter: `user_id=eq.${userId}` }, () => loadEntries())
+      .on("postgres_changes", { event: "*", schema: "public", table: "water_logs", filter: `user_id=eq.${userId}` }, () => loadWater())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [userId, loadEntries, loadWater]);
+
+  const waterMl = useMemo(() => waterLogs.reduce((s, w) => s + Number(w.amount_ml || 0), 0), [waterLogs]);
+
+  async function addWater(ml: number) {
+    if (!userId || !ml) return;
+    const { error } = await supabase.from("water_logs").insert({ user_id: userId, log_date: date, amount_ml: ml });
+    if (error) return toast.error(error.message);
+    loadWater();
+  }
+  async function resetWater() {
+    if (!userId) return;
+    const { error } = await supabase.from("water_logs").delete().eq("user_id", userId).eq("log_date", date);
+    if (error) return toast.error(error.message);
+    loadWater();
+  }
 
   const totals = useMemo(() => entries.reduce((a, e) => ({
     calories: a.calories + Number(e.calories),
@@ -167,6 +200,14 @@ function MacrosPage() {
             <MacroCard label="Fiber"   unit="g" consumed={totals.fiber}   goal={target.fiber}   color="from-emerald-400 to-teal-300" />
           </div>
         </div>
+
+        {/* Water */}
+        <WaterCard
+          consumedMl={waterMl}
+          goalMl={Number(goals.water_goal_ml || 3500)}
+          onAdd={addWater}
+          onReset={resetWater}
+        />
 
         {/* Meals */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
