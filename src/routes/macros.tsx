@@ -590,13 +590,14 @@ function GoalsModal({ profile, goals, onClose, onSaved }: { profile: any; goals:
     carb_goal: goals?.carb_goal ?? auto.carbs,
     fat_goal: goals?.fat_goal ?? auto.fat,
     fiber_goal: goals?.fiber_goal ?? auto.fiber,
+    water_goal_ml: goals?.water_goal_ml ?? 3500,
   });
   const [busy, setBusy] = useState(false);
 
   async function save() {
     setBusy(true);
     const payload = mode === "auto"
-      ? { is_custom: false, goal_type: "auto", calorie_goal: auto.calories, protein_goal: auto.protein, carb_goal: auto.carbs, fat_goal: auto.fat, fiber_goal: auto.fiber }
+      ? { is_custom: false, goal_type: "auto", calorie_goal: auto.calories, protein_goal: auto.protein, carb_goal: auto.carbs, fat_goal: auto.fat, fiber_goal: auto.fiber, water_goal_ml: f.water_goal_ml }
       : { is_custom: true, goal_type: "custom", ...f };
     const { data, error } = await supabase.from("nutrition_goals").update(payload).eq("user_id", goals.user_id).select().single();
     setBusy(false);
@@ -631,12 +632,17 @@ function GoalsModal({ profile, goals, onClose, onSaved }: { profile: any; goals:
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-3">
-              {(["calorie_goal","protein_goal","carb_goal","fat_goal","fiber_goal"] as const).map((k) => (
+              {(["calorie_goal","protein_goal","carb_goal","fat_goal","fiber_goal","water_goal_ml"] as const).map((k) => (
                 <Field key={k} label={k.replace("_goal","").replace("carb","carbs")}>
                   <input type="number" min="0" value={(f as any)[k]} onChange={(e) => setF({ ...f, [k]: +e.target.value })} className={inp} />
                 </Field>
               ))}
             </div>
+          )}
+          {mode === "auto" && (
+            <Field label="Water goal (ml)">
+              <input type="number" min={500} value={f.water_goal_ml} onChange={(e) => setF({ ...f, water_goal_ml: +e.target.value })} className={inp} />
+            </Field>
           )}
           <button onClick={save} disabled={busy} className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-bold flex items-center justify-center gap-2 disabled:opacity-50">
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}Save goals
