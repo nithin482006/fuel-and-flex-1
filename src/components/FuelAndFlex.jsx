@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import {
   Home, Dumbbell, Utensils, TrendingUp, Flame, Droplet, Moon, Check, Plus,
@@ -1658,6 +1659,15 @@ export default function App() {
   const [tab,     setTab]     = useState("dashboard");
   const [dateKey, setDateKey] = useState(todayKey());
   const [editDay, setEditDay] = useState(null);
+  const navigate = useNavigate();
+
+  const handleSetTab = useCallback((next) => {
+    if (next === "nutrition") {
+      navigate({ to: "/macros" });
+      return;
+    }
+    setTab(next);
+  }, [navigate]);
 
   useEffect(()=>{ loadData().then(setData); }, []);
 
@@ -1727,12 +1737,11 @@ export default function App() {
       <div className="ff-shell">
         <Header/>
         <div className="ff-scroll">
-          {tab==="dashboard" && <Dashboard data={data} updateDaily={updateDaily} setTab={setTab} streak={streak}/>}
+          {tab==="dashboard" && <Dashboard data={data} updateDaily={updateDaily} setTab={handleSetTab} streak={streak}/>}
           {tab==="workout"   && <WorkoutTab data={data} dateKey={dateKey} setDateKey={setDateKey} logSet={logSet} exerciseHistory={exerciseHistory} onOpenEditor={openEditor}/>}
-          {tab==="nutrition" && <NutritionTab data={data} updateDaily={updateDaily}/>}
           {tab==="progress"  && <ProgressTab data={data} onReset={resetAll}/>}
         </div>
-        <BottomNav tab={tab} setTab={setTab}/>
+        <BottomNav tab={tab} setTab={handleSetTab}/>
 
         {editDay && (
           <WorkoutEditorModal
