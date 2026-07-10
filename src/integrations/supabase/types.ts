@@ -156,6 +156,7 @@ export type Database = {
           protein_goal: number
           updated_at: string
           user_id: string
+          water_goal_ml: number
         }
         Insert: {
           calorie_goal?: number
@@ -169,6 +170,7 @@ export type Database = {
           protein_goal?: number
           updated_at?: string
           user_id: string
+          water_goal_ml?: number
         }
         Update: {
           calorie_goal?: number
@@ -182,6 +184,7 @@ export type Database = {
           protein_goal?: number
           updated_at?: string
           user_id?: string
+          water_goal_ml?: number
         }
         Relationships: []
       }
@@ -198,7 +201,9 @@ export type Database = {
           height_cm: number | null
           id: string
           onboarding_completed: boolean
+          starting_weight_kg: number | null
           target_weight: number | null
+          target_weight_kg: number | null
           updated_at: string
           user_id: string
           weight_kg: number | null
@@ -215,7 +220,9 @@ export type Database = {
           height_cm?: number | null
           id?: string
           onboarding_completed?: boolean
+          starting_weight_kg?: number | null
           target_weight?: number | null
+          target_weight_kg?: number | null
           updated_at?: string
           user_id: string
           weight_kg?: number | null
@@ -232,7 +239,9 @@ export type Database = {
           height_cm?: number | null
           id?: string
           onboarding_completed?: boolean
+          starting_weight_kg?: number | null
           target_weight?: number | null
+          target_weight_kg?: number | null
           updated_at?: string
           user_id?: string
           weight_kg?: number | null
@@ -287,6 +296,57 @@ export type Database = {
           serving_size?: number
           serving_unit?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      water_logs: {
+        Row: {
+          amount_ml: number
+          created_at: string
+          id: string
+          log_date: string
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_ml: number
+          created_at?: string
+          id?: string
+          log_date?: string
+          note?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_ml?: number
+          created_at?: string
+          id?: string
+          log_date?: string
+          note?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      weight_history: {
+        Row: {
+          bmi: number | null
+          id: string
+          recorded_at: string
+          user_id: string
+          weight_kg: number
+        }
+        Insert: {
+          bmi?: number | null
+          id?: string
+          recorded_at?: string
+          user_id: string
+          weight_kg: number
+        }
+        Update: {
+          bmi?: number | null
+          id?: string
+          recorded_at?: string
+          user_id?: string
+          weight_kg?: number
         }
         Relationships: []
       }
