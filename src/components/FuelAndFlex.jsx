@@ -1322,6 +1322,128 @@ function SleepRow({log,onChange}) {
 /* ══════════════════════════════════════════════════════════════
    DASHBOARD
    ══════════════════════════════════════════════════════════════ */
+function Ring({ value, goal, color, label, unit="", size=84 }) {
+  const target = Math.min(100, goal > 0 ? (value/goal)*100 : 0);
+  const [anim, setAnim] = useState(0);
+  useEffect(() => {
+    let raf; const start = performance.now(); const dur = 900;
+    const tick = t => {
+      const p = Math.min(1, (t - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setAnim(eased * target);
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target]);
+  const r = (size - 10) / 2;
+  const C = 2 * Math.PI * r;
+  const dash = C * (anim / 100);
+  return (
+    <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
+      <div style={{position:"relative",width:size,height:size}}>
+        <svg width={size} height={size} style={{transform:"rotate(-90deg)"}}>
+          <circle cx={size/2} cy={size/2} r={r} stroke="rgba(255,255,255,0.06)" strokeWidth="7" fill="none"/>
+          <circle cx={size/2} cy={size/2} r={r} stroke={color} strokeWidth="7" fill="none"
+            strokeDasharray={`${dash} ${C}`} strokeLinecap="round"
+            style={{filter:`drop-shadow(0 0 6px ${color}80)`}}/>
+        </svg>
+        <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+          <div style={{fontFamily:"var(--font-m)",fontSize:14,fontWeight:800,color:"var(--text)"}}>{Math.round(anim)}%</div>
+          <div style={{fontSize:9,color:"var(--text-2)",marginTop:1}}>{Math.round(value)}/{Math.round(goal)}{unit}</div>
+        </div>
+      </div>
+      <div style={{fontSize:10,fontWeight:700,color,letterSpacing:"1px",textTransform:"uppercase"}}>{label}</div>
+    </div>
+  );
+}
+
+function DashboardHero({ nutrition, data, tk, wd, dayData }) {
+  const name = (nutrition?.profile?.full_name || "").split(" ")[0] || "Athlete";
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+
+  const cals = nutrition?.totals?.calories ?? 0;
+  const calGoal = nutrition?.goals?.calories ?? 2200;
+  const protein = nutrition?.totals?.protein ?? 0;
+  const proteinGoal = nutrition?.goals?.protein ?? 130;
+  const waterMl = nutrition?.waterMl ?? 0;
+  const waterGoal = nutrition?.goals?.water ?? 3500;
+
+  const wlog = data.workoutLogs?.[tk] || { exercises: {} };
+  const planned = (dayData?.exercises || []).reduce((s, e) => s + (Number(e.sets) || 0), 0);
+  const logged = Object.values(wlog.exercises || {}).reduce((s, e) => s + (e.sets?.length || 0), 0);
+  const isRest = wd === "Sunday";
+  const workoutPct = isRest ? 100 : planned > 0 ? Math.min(100, (logged / planned) * 100) : 0;
+  const workoutVal = isRest ? 1 : logged;
+  const workoutGoal = isRest ? 1 : (planned || 1);
+
+  const overall = Math.round(
+    (Math.min(100, (cals / Math.max(1, calGoal)) * 100) +
+     Math.min(100, (protein / Math.max(1, proteinGoal)) * 100) +
+     Math.min(100, (waterMl / Math.max(1, waterGoal)) * 100) +
+     workoutPct) / 4
+  );
+
+  const waterDone = waterMl >= waterGoal && waterGoal > 0;
+  const [celebrated, setCelebrated] = useState(false);
+  const prevDone = useRef(false);
+  useEffect(() => {
+    if (waterDone && !prevDone.current) {
+      prevDone.current = true;
+      setCelebrated(true);
+      const t = setTimeout(() => setCelebrated(false), 2200);
+      return () => clearTimeout(t);
+    }
+    if (!waterDone) prevDone.current = false;
+  }, [waterDone]);
+
+  return (
+    <div className="card" style={{marginBottom:12,background:"linear-gradient(135deg, rgba(0,255,135,0.06), rgba(0,191,255,0.04))",backdropFilter:"blur(6px)"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:12,gap:8}}>
+        <div style={{minWidth:0}}>
+          <div style={{fontSize:10,color:"var(--text-2)",letterSpacing:"1.5px",textTransform:"uppercase"}}>{greet}</div>
+          <div style={{fontFamily:"var(--font-d)",fontSize:20,fontWeight:800,color:"var(--text)",lineHeight:1.1,marginTop:2}}>{name} <span style={{fontSize:16}}>👋</span></div>
+        </div>
+        <div style={{textAlign:"right",flexShrink:0}}>
+          <div style={{fontSize:9,color:"var(--text-2)",textTransform:"uppercase",letterSpacing:"1.5px"}}>Today's Progress</div>
+          <div style={{fontFamily:"var(--font-m)",fontSize:22,fontWeight:800,color:"var(--neon)",textShadow:"0 0 10px var(--neon)"}}>{overall}%</div>
+        </div>
+      </div>
+
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
+        <Ring value={cals} goal={calGoal} color="#FB923C" label="Calories"/>
+        <Ring value={protein} goal={proteinGoal} color="#22C55E" label="Protein" unit="g"/>
+        <Ring value={waterMl/1000} goal={waterGoal/1000} color="#3B82F6" label="Water" unit="L"/>
+        <Ring value={workoutVal} goal={workoutGoal} color="#EF4444" label="Workout"/>
+      </div>
+
+      <div style={{marginTop:14,padding:12,borderRadius:12,border:"1px solid rgba(59,130,246,0.25)",background:"rgba(59,130,246,0.06)",position:"relative",overflow:"hidden"}}>
+        {celebrated && <div className="water-celebrate">🎉 Goal reached!</div>}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,gap:8,flexWrap:"wrap"}}>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <Droplet size={16} color="#3B82F6"/>
+            <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>Water Intake</div>
+          </div>
+          <div style={{fontFamily:"var(--font-m)",fontSize:12,color:"#60A5FA"}}>
+            {(waterMl/1000).toFixed(2)}L / {(waterGoal/1000).toFixed(2)}L
+          </div>
+        </div>
+        <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+          <button className="btn btn-ghost btn-sm" onClick={()=>nutrition.addWater(250)}>+250 ml</button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>nutrition.addWater(500)}>+500 ml</button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>nutrition.resetWater()}><RotateCcw size={12} style={{marginRight:4}}/>Reset</button>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes celebratePop { 0%{transform:translate(-50%,-50%) scale(0.5);opacity:0} 40%{transform:translate(-50%,-50%) scale(1.15);opacity:1} 100%{transform:translate(-50%,-50%) scale(1);opacity:0} }
+        .water-celebrate{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-d);font-weight:800;font-size:16px;color:#60A5FA;text-shadow:0 0 12px #3B82F6;animation:celebratePop 2.2s ease-out forwards;z-index:2;pointer-events:none;white-space:nowrap}
+      `}</style>
+    </div>
+  );
+}
+
 function Dashboard({data, updateDaily, setTab, streak, nutrition}) {
   const tk=todayKey(), log=getDailyLog(data,tk);
   const wd=weekdayOf(tk), isRest=wd==="Sunday";
@@ -1345,6 +1467,8 @@ function Dashboard({data, updateDaily, setTab, streak, nutrition}) {
 
   return (
     <>
+      <DashboardHero nutrition={nutrition} data={data} tk={tk} wd={wd} dayData={dayData}/>
+
       {!data.onboardingDismissed&&(
         <div className="card" style={{borderColor:"rgba(0,255,135,0.3)",background:"rgba(0,255,135,0.04)",marginBottom:12}}>
           <div style={{display:"flex",gap:10,alignItems:"flex-start"}}>
