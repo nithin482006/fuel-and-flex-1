@@ -1345,6 +1345,8 @@ function Dashboard({data, updateDaily, setTab, streak, nutrition}) {
 
   return (
     <>
+      <DashboardHero nutrition={nutrition} data={data} tk={tk} wd={wd} dayData={dayData}/>
+
       {!data.onboardingDismissed&&(
         <div className="card" style={{borderColor:"rgba(0,255,135,0.3)",background:"rgba(0,255,135,0.04)",marginBottom:12}}>
           <div style={{display:"flex",gap:10,alignItems:"flex-start"}}>
