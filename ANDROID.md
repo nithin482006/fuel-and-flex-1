@@ -54,6 +54,13 @@ device without a full rebuild.
 
 ## Notes / next steps
 
+- **Build output**: this project uses TanStack Start (SSR). Capacitor needs a
+  static web bundle. Two options:
+  1. Set `server.url` in `capacitor.config.ts` to your published Lovable URL
+     (`https://fuel-and-flex-1.lovable.app`) — the native app loads the live
+     web app. Simplest path; `webDir` is unused.
+  2. Add a static-export step (e.g. TanStack Start prerender or a
+     Vite-only SPA build) that emits to `dist/public`, then run `cap sync`.
 - App icons + splash images: drop 1024×1024 assets and run
   `npx @capacitor/assets generate --android`.
 - Push notifications (FCM), Firebase Analytics/Crashlytics, offline sync,
