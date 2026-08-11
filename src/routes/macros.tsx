@@ -363,24 +363,24 @@ function WaterCard({ consumedMl, goalMl, onAdd, onReset }: { consumedMl: number;
   const r = 60; const c = 2 * Math.PI * r;
   const goalReached = consumedMl >= goalMl;
   return (
-    <div className={`rounded-2xl border ${goalReached ? "border-emerald-500/50" : "border-sky-500/25"} bg-gradient-to-br from-sky-500/10 to-transparent p-5 mb-6`}>
+    <div className={`ff-card ${goalReached ? "ff-card-glow" : ""} p-5 mb-6`}>
       <div className="flex items-center gap-2 mb-4">
         <Droplet className="w-4 h-4 text-sky-400" />
-        <h3 className="font-bold text-white">Water Intake</h3>
-        {goalReached && <span className="ml-2 text-[10px] font-bold uppercase tracking-widest text-emerald-400">Goal reached ✓</span>}
+        <h3 className="ff-display text-sm font-bold uppercase">Water Intake</h3>
+        {goalReached && <span className="ff-display ml-2 text-[10px] font-bold uppercase text-emerald-400">Goal reached ✓</span>}
       </div>
       <div className="flex flex-wrap items-center gap-5">
         <div className="relative shrink-0">
           <svg width="150" height="150" viewBox="0 0 150 150" className="-rotate-90">
-            <circle cx="75" cy="75" r={r} strokeWidth="12" stroke="rgb(39,39,42)" fill="none" />
+            <circle cx="75" cy="75" r={r} strokeWidth="12" stroke="var(--ff-surf3)" fill="none" />
             <circle cx="75" cy="75" r={r} strokeWidth="12" stroke="url(#gradW)" fill="none"
               strokeDasharray={c} strokeDashoffset={c - (c * pct) / 100} strokeLinecap="round"
               style={{ transition: "stroke-dashoffset 0.6s ease" }} />
-            <defs><linearGradient id="gradW" x1="0" x2="1"><stop offset="0" stopColor="#38bdf8" /><stop offset="1" stopColor="#22d3ee" /></linearGradient></defs>
+            <defs><linearGradient id="gradW" x1="0" x2="1"><stop offset="0" stopColor="#3B82F6" /><stop offset="1" stopColor="var(--ff-water)" /></linearGradient></defs>
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="text-2xl font-black text-white tabular-nums">{(consumedMl / 1000).toFixed(2)}L</div>
-            <div className="text-[10px] uppercase tracking-widest text-zinc-500">{Math.round(pct)}%</div>
+            <div className="ff-mono text-2xl font-bold tabular-nums">{(consumedMl / 1000).toFixed(2)}L</div>
+            <div className="ff-label">{Math.round(pct)}%</div>
           </div>
         </div>
         <div className="min-w-0 flex-1">
@@ -392,16 +392,16 @@ function WaterCard({ consumedMl, goalMl, onAdd, onReset }: { consumedMl: number;
           <div className="grid grid-cols-4 gap-2 mb-2">
             {[250, 500, 750, 1000].map((ml) => (
               <button key={ml} onClick={() => onAdd(ml)}
-                className="h-10 rounded-lg border border-sky-500/30 bg-sky-500/10 text-sky-300 text-xs font-semibold hover:bg-sky-500/20 hover:border-sky-400 transition">
+                className="ff-btn h-10 text-xs font-semibold text-sky-300" style={{ borderColor: "rgba(96,165,250,0.35)", background: "rgba(96,165,250,0.10)" }}>
                 +{ml < 1000 ? `${ml}ml` : `${ml / 1000}L`}
               </button>
             ))}
           </div>
           <div className="flex items-center gap-2">
             <input type="number" min={1} value={manual} onChange={(e) => setManual(+e.target.value)}
-              className="flex-1 h-10 rounded-lg bg-zinc-900 border border-zinc-800 focus:border-sky-500 outline-none px-3 text-sm text-white" placeholder="ml" />
-            <button onClick={() => manual > 0 && onAdd(manual)} className="h-10 px-4 rounded-lg bg-gradient-to-r from-sky-400 to-cyan-500 text-black font-bold text-sm flex items-center gap-1"><Plus className="w-4 h-4" />Add</button>
-            <button onClick={onReset} title="Reset today's water" className="h-10 w-10 rounded-lg border border-zinc-800 hover:border-red-500/40 text-zinc-400 hover:text-red-400 flex items-center justify-center"><RotateCcw className="w-4 h-4" /></button>
+              className="ff-input flex-1 h-10 outline-none px-3 text-sm" placeholder="ml" />
+            <button onClick={() => manual > 0 && onAdd(manual)} className="ff-btn h-10 px-4 text-sm font-bold flex items-center gap-1" style={{ background: "var(--ff-water)", borderColor: "var(--ff-water)", color: "#04121F" }}><Plus className="w-4 h-4" />Add</button>
+            <button onClick={onReset} title="Reset today's water" className="ff-btn h-10 w-10 text-zinc-400 hover:text-red-400 flex items-center justify-center"><RotateCcw className="w-4 h-4" /></button>
           </div>
         </div>
       </div>
