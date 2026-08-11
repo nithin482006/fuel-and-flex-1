@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "sonner";
 import { Loader2, User, LogOut, Activity, Target, Ruler, Weight } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 
 // @ts-expect-error - JSX module without types
 const FuelAndFlex = lazy(() => import("@/components/FuelAndFlex.jsx"));
@@ -55,7 +56,7 @@ function Index() {
   }
 
   if (status === "loading") {
-    return <div className="min-h-screen bg-black flex items-center justify-center text-emerald-400"><Loader2 className="w-6 h-6 animate-spin" /></div>;
+    return <div className="ff-page min-h-screen flex items-center justify-center text-emerald-400"><Loader2 className="w-6 h-6 animate-spin" /></div>;
   }
 
   const goalLabel: Record<string, string> = {
@@ -63,24 +64,27 @@ function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="ff-page min-h-screen">
       <Toaster theme="dark" position="top-center" />
       {/* Top bar with welcome + profile menu */}
-      <div className="border-b border-emerald-500/10 bg-black/80 backdrop-blur sticky top-0 z-40">
+      <div className="border-b backdrop-blur sticky top-0 z-40" style={{ borderColor: "var(--ff-bdr2)", background: "rgba(6,10,8,0.96)" }}>
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <div className="text-xs text-zinc-500">Welcome back,</div>
-            <div className="text-sm font-semibold text-white truncate">{profile.full_name || "Athlete"}</div>
+          <div className="min-w-0 flex items-center gap-4">
+            <BrandLogo size="sm" />
+            <div className="min-w-0 hidden sm:block">
+              <div className="ff-label">Welcome back</div>
+              <div className="ff-mono text-xs font-semibold truncate">{profile.full_name || "Athlete"}</div>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <StatChip icon={<Ruler className="w-3.5 h-3.5" />} label="Height" value={`${profile.height_cm} cm`} />
             <StatChip icon={<Weight className="w-3.5 h-3.5" />} label="Weight" value={`${profile.weight_kg} kg`} />
             <StatChip icon={<Activity className="w-3.5 h-3.5" />} label="BMI" value={`${profile.bmi ?? "—"} · ${profile.bmi_category ?? ""}`} highlight />
             {profile.fitness_goal && <StatChip icon={<Target className="w-3.5 h-3.5" />} label="Goal" value={goalLabel[profile.fitness_goal] ?? profile.fitness_goal} />}
-            <Link to="/profile" className="ml-1 h-9 w-9 rounded-full bg-zinc-900 border border-emerald-500/30 flex items-center justify-center hover:bg-zinc-800 text-emerald-400" title="Profile">
+            <Link to="/profile" className="ff-btn ml-1 h-9 w-9 !rounded-full flex items-center justify-center text-emerald-400" title="Profile">
               <User className="w-4 h-4" />
             </Link>
-            <button onClick={signOut} className="h-9 w-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-zinc-800 text-zinc-400 hover:text-red-400" title="Sign out">
+            <button onClick={signOut} className="ff-btn h-9 w-9 !rounded-full flex items-center justify-center text-zinc-400 hover:text-red-400" title="Sign out">
               <LogOut className="w-4 h-4" />
             </button>
           </div>

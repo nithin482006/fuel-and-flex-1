@@ -235,29 +235,30 @@ function buildHistory(data,name) {
 const STYLE = `
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
+/* All brand values come from the shared tokens in src/styles.css. */
 :root {
-  --bg:        #060A08;
-  --bg2:       #080E0B;
-  --surf:      #0B1610;
-  --surf2:     #0F1E14;
-  --surf3:     #152A1A;
-  --bdr:       rgba(0,255,135,0.10);
-  --bdr2:      rgba(0,255,135,0.20);
-  --bdr3:      rgba(0,255,135,0.35);
-  --neon:      #00FF87;
-  --neon-dim:  #00C965;
+  --bg:        var(--ff-bg);
+  --bg2:       var(--ff-bg2);
+  --surf:      var(--ff-surf);
+  --surf2:     var(--ff-surf2);
+  --surf3:     var(--ff-surf3);
+  --bdr:       var(--ff-bdr);
+  --bdr2:      var(--ff-bdr2);
+  --bdr3:      var(--ff-bdr3);
+  --neon:      var(--ff-neon);
+  --neon-dim:  var(--ff-neon-dim);
   --glow:      rgba(0,255,135,0.20);
   --glow-lg:   rgba(0,255,135,0.10);
   --cyan:      #00E5FF;
   --purple:    #BD93F9;
   --yellow:    #FFD60A;
-  --danger:    #FF5370;
-  --text:      #DFFAEE;
-  --text-2:    #8BBFA0;
-  --text-3:    #2E5040;
-  --font-d:    'Orbitron', sans-serif;
-  --font-b:    'Inter', sans-serif;
-  --font-m:    'JetBrains Mono', monospace;
+  --danger:    var(--ff-danger);
+  --text:      var(--ff-text);
+  --text-2:    var(--ff-text-2);
+  --text-3:    var(--ff-text-3);
+  --font-d:    var(--ff-font-display);
+  --font-b:    var(--ff-font-body);
+  --font-m:    var(--ff-font-mono);
 }
 
 .ff-root {

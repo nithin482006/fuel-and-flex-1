@@ -182,3 +182,139 @@
 
 @utility safe-top { padding-top: var(--safe-area-inset-top); }
 @utility safe-bottom { padding-bottom: var(--safe-area-inset-bottom); }
+
+/* ===========================================================
+   FUEL & FLEX BRAND TOKENS — single source of truth
+   Extracted from the Today (dashboard) screen. Every screen
+   (auth, onboarding, profile, macros) consumes these.
+   =========================================================== */
+:root {
+  --ff-bg:        #060A08;
+  --ff-bg2:       #080E0B;
+  --ff-surf:      #0B1610;
+  --ff-surf2:     #0F1E14;
+  --ff-surf3:     #152A1A;
+  --ff-bdr:       rgba(0, 255, 135, 0.10);
+  --ff-bdr2:      rgba(0, 255, 135, 0.20);
+  --ff-bdr3:      rgba(0, 255, 135, 0.35);
+  --ff-neon:      #00FF87;
+  --ff-neon-dim:  #00C965;
+  --ff-water:     #60A5FA;
+  --ff-danger:    #FF5370;
+  --ff-text:      #DFFAEE;
+  --ff-text-2:    #8BBFA0;
+  --ff-text-3:    #2E5040;
+  --ff-font-display: 'Orbitron', sans-serif;
+  --ff-font-body:    'Inter', sans-serif;
+  --ff-font-mono:    'JetBrains Mono', monospace;
+}
+
+/* Map the Tailwind ramps used across the app onto the brand palette
+   so no screen can drift into a different green / grey / blue. */
+@theme inline {
+  --font-sans: var(--ff-font-body);
+  --font-mono: var(--ff-font-mono);
+  --font-display: var(--ff-font-display);
+
+  --color-emerald-200: #C8FFE4;
+  --color-emerald-300: #6BFFB8;
+  --color-emerald-400: var(--ff-neon);
+  --color-emerald-500: var(--ff-neon);
+  --color-emerald-600: var(--ff-neon-dim);
+  --color-teal-300: #6BFFB8;
+  --color-teal-400: var(--ff-neon);
+  --color-teal-500: var(--ff-neon-dim);
+  --color-cyan-400: var(--ff-neon);
+  --color-cyan-500: var(--ff-neon-dim);
+  --color-sky-300: #93C5FD;
+  --color-sky-400: var(--ff-water);
+  --color-sky-500: var(--ff-water);
+  --color-zinc-300: var(--ff-text);
+  --color-zinc-400: var(--ff-text-2);
+  --color-zinc-500: #5C8C74;
+  --color-zinc-600: var(--ff-text-3);
+  --color-zinc-800: var(--ff-bdr2);
+  --color-zinc-900: var(--ff-surf2);
+  --color-zinc-950: var(--ff-surf);
+  --color-red-400: var(--ff-danger);
+}
+/* Shared surface / control primitives, identical to the Today screen */
+@utility ff-page {
+  background: var(--ff-bg);
+  color: var(--ff-text);
+  font-family: var(--ff-font-body);
+}
+
+@utility ff-card {
+  background: linear-gradient(160deg, var(--ff-surf) 0%, var(--ff-bg2) 100%);
+  border: 1px solid var(--ff-bdr);
+  border-top-color: var(--ff-bdr2);
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 1px rgba(0, 255, 135, 0.03),
+    0 6px 28px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(0, 255, 135, 0.06);
+}
+
+@utility ff-card-glow {
+  border-color: var(--ff-bdr3);
+  box-shadow:
+    0 0 16px rgba(0, 255, 135, 0.08),
+    0 6px 28px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(0, 255, 135, 0.12);
+}
+
+@utility ff-label {
+  font-family: var(--ff-font-display);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ff-text-2);
+}
+
+@utility ff-display {
+  font-family: var(--ff-font-display);
+  letter-spacing: 1.5px;
+}
+
+@utility ff-mono {
+  font-family: var(--ff-font-mono);
+}
+
+@utility ff-btn {
+  font-family: var(--ff-font-body);
+  font-weight: 600;
+  border-radius: 9px;
+  border: 1px solid var(--ff-bdr2);
+  background: var(--ff-surf2);
+  color: var(--ff-text);
+  transition: all 0.15s;
+  &:active { transform: scale(0.96); }
+}
+
+@utility ff-btn-neon {
+  font-family: var(--ff-font-body);
+  background: var(--ff-neon);
+  border: 1px solid var(--ff-neon);
+  border-radius: 9px;
+  color: #040F07;
+  font-weight: 700;
+  box-shadow: 0 0 18px rgba(0, 255, 135, 0.35), 0 0 40px rgba(0, 255, 135, 0.12);
+  transition: all 0.15s;
+  &:hover { box-shadow: 0 0 24px rgba(0, 255, 135, 0.55), 0 0 50px rgba(0, 255, 135, 0.18); }
+  &:active { transform: scale(0.96); }
+}
+
+@utility ff-input {
+  font-family: var(--ff-font-mono);
+  background: var(--ff-surf2);
+  border: 1px solid var(--ff-bdr2);
+  border-radius: 9px;
+  color: var(--ff-text);
+  &:focus {
+    outline: none;
+    border-color: var(--ff-neon);
+    box-shadow: 0 0 0 2px rgba(0, 255, 135, 0.12);
+  }
+}

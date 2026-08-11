@@ -160,34 +160,34 @@ function MacrosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="ff-page min-h-screen">
       <Toaster theme="dark" position="top-center" />
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-1 text-sm text-zinc-400 hover:text-emerald-400"><ArrowLeft className="w-4 h-4" />Dashboard</Link>
-            <h1 className="text-2xl md:text-3xl font-black tracking-tight">
-              <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">Macros</span> Management
+            <Link to="/" className="ff-mono flex items-center gap-1 text-xs text-zinc-400 hover:text-emerald-400"><ArrowLeft className="w-4 h-4" />Dashboard</Link>
+            <h1 className="ff-display text-lg md:text-xl font-bold uppercase">
+              <span className="text-emerald-400">Macros</span> Management
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => setShowAnalytics(true)} className="h-9 px-3 rounded-lg border border-zinc-800 hover:border-emerald-500/40 text-xs flex items-center gap-1.5"><BarChart3 className="w-3.5 h-3.5" />Analytics</button>
-            <button onClick={() => setShowCustom(true)} className="h-9 px-3 rounded-lg border border-zinc-800 hover:border-emerald-500/40 text-xs flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />Custom food</button>
-            <button onClick={() => setShowGoals(true)} className="h-9 px-3 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 text-xs flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5" />Goals</button>
+            <button onClick={() => setShowAnalytics(true)} className="ff-btn h-9 px-3 text-xs flex items-center gap-1.5"><BarChart3 className="w-3.5 h-3.5" />Analytics</button>
+            <button onClick={() => setShowCustom(true)} className="ff-btn h-9 px-3 text-xs flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />Custom food</button>
+            <button onClick={() => setShowGoals(true)} className="ff-btn h-9 px-3 text-xs flex items-center gap-1.5 text-emerald-300" style={{ borderColor: "var(--ff-bdr3)", background: "rgba(0,255,135,0.08)" }}><Sparkles className="w-3.5 h-3.5" />Goals</button>
           </div>
         </div>
 
         {/* Date selector */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          <button onClick={() => setDate(addDaysISO(date, -1))} className="h-9 w-9 rounded-lg border border-zinc-800 hover:border-emerald-500/40 flex items-center justify-center"><ChevronLeft className="w-4 h-4" /></button>
-          <div className="h-9 px-4 rounded-lg border border-zinc-800 bg-zinc-950 flex items-center gap-2 text-sm">
+          <button onClick={() => setDate(addDaysISO(date, -1))} className="ff-btn h-9 w-9 flex items-center justify-center"><ChevronLeft className="w-4 h-4" /></button>
+          <div className="ff-btn ff-mono h-9 px-4 flex items-center gap-2 text-xs">
             <Calendar className="w-4 h-4 text-emerald-400" />
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="bg-transparent outline-none text-white [color-scheme:dark]" />
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="bg-transparent outline-none [color-scheme:dark]" />
             {date === todayISO() && <span className="text-[10px] font-bold text-emerald-400 uppercase">Today</span>}
           </div>
-          <button onClick={() => setDate(addDaysISO(date, 1))} className="h-9 w-9 rounded-lg border border-zinc-800 hover:border-emerald-500/40 flex items-center justify-center"><ChevronRight className="w-4 h-4" /></button>
-          <button onClick={copyYesterday} className="ml-2 h-9 px-3 rounded-lg border border-zinc-800 hover:border-emerald-500/40 text-xs flex items-center gap-1.5"><Copy className="w-3.5 h-3.5" />Copy yesterday</button>
+          <button onClick={() => setDate(addDaysISO(date, 1))} className="ff-btn h-9 w-9 flex items-center justify-center"><ChevronRight className="w-4 h-4" /></button>
+          <button onClick={copyYesterday} className="ff-btn ml-2 h-9 px-3 text-xs flex items-center gap-1.5"><Copy className="w-3.5 h-3.5" />Copy yesterday</button>
         </div>
 
         {/* Dashboard */}
@@ -218,14 +218,14 @@ function MacrosPage() {
               cb: a.cb + Number(e.carbs), f: a.f + Number(e.fat), fb: a.fb + Number(e.fiber),
             }), { c: 0, p: 0, cb: 0, f: 0, fb: 0 });
             return (
-              <div key={m.key} className="rounded-2xl border border-emerald-500/15 bg-zinc-950/70 p-4">
+              <div key={m.key} className="ff-card p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Utensils className="w-4 h-4 text-emerald-400" />
-                    <h3 className="font-bold">{m.label}</h3>
-                    <span className="text-xs text-zinc-500">· {Math.round(t.c)} kcal</span>
+                    <h3 className="ff-display text-sm font-bold uppercase">{m.label}</h3>
+                    <span className="ff-mono text-[11px] text-zinc-500">· {Math.round(t.c)} kcal</span>
                   </div>
-                  <button onClick={() => setPickerMeal(m.key)} className="h-8 px-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-1 hover:bg-emerald-500/20"><Plus className="w-3.5 h-3.5" />Add food</button>
+                  <button onClick={() => setPickerMeal(m.key)} className="ff-btn h-8 px-3 text-xs flex items-center gap-1 text-emerald-300" style={{ borderColor: "var(--ff-bdr3)", background: "rgba(0,255,135,0.08)" }}><Plus className="w-3.5 h-3.5" />Add food</button>
                 </div>
                 <div className="space-y-1.5">
                   {mealEntries.length === 0 && <div className="text-xs text-zinc-600 py-2">No foods logged.</div>}
@@ -233,10 +233,10 @@ function MacrosPage() {
                     <div key={e.id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-zinc-900/60 border border-zinc-800/50 group">
                       <div className="min-w-0">
                         <div className="text-sm font-medium truncate">{e.food_name}</div>
-                        <div className="text-[11px] text-zinc-500">{Number(e.quantity) * Number(e.serving_size)} {e.serving_unit} · P {Math.round(Number(e.protein))} · C {Math.round(Number(e.carbs))} · F {Math.round(Number(e.fat))}</div>
+                        <div className="ff-mono text-[11px] text-zinc-500">{Number(e.quantity) * Number(e.serving_size)} {e.serving_unit} · P {Math.round(Number(e.protein))} · C {Math.round(Number(e.carbs))} · F {Math.round(Number(e.fat))}</div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <div className="text-sm font-bold text-emerald-400 tabular-nums">{Math.round(Number(e.calories))}</div>
+                        <div className="ff-mono text-sm font-bold text-emerald-400 tabular-nums">{Math.round(Number(e.calories))}</div>
                         <button onClick={() => deleteEntry(e.id)} className="text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </div>
@@ -256,8 +256,8 @@ function MacrosPage() {
         </div>
 
         {/* Today summary */}
-        <div className="mt-6 rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-transparent p-5">
-          <div className="flex items-center gap-2 mb-3"><Flame className="w-4 h-4 text-emerald-400" /><h3 className="font-bold">Today's Nutrition</h3></div>
+        <div className="ff-card ff-card-glow mt-6 p-5">
+          <div className="flex items-center gap-2 mb-3"><Flame className="w-4 h-4 text-emerald-400" /><h3 className="ff-display text-sm font-bold uppercase">Today's Nutrition</h3></div>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {([
               ["Calories", totals.calories, target.calories, "kcal"],
@@ -266,10 +266,10 @@ function MacrosPage() {
               ["Fat", totals.fat, target.fat, "g"],
               ["Fiber", totals.fiber, target.fiber, "g"],
             ] as const).map(([label, c, g, u]) => (
-              <div key={label} className="rounded-xl bg-zinc-950/70 border border-zinc-800 p-3">
-                <div className="text-[10px] uppercase tracking-wider text-zinc-500">{label}</div>
-                <div className="text-lg font-bold text-white tabular-nums">{Math.round(c)}<span className="text-xs text-zinc-500"> / {Math.round(g)} {u}</span></div>
-                <div className="text-[11px] text-emerald-400">{Math.max(0, Math.round(g - c))} {u} left</div>
+              <div key={label} className="ff-card p-3">
+                <div className="ff-label">{label}</div>
+                <div className="ff-mono text-lg font-bold tabular-nums">{Math.round(c)}<span className="text-xs text-zinc-500"> / {Math.round(g)} {u}</span></div>
+                <div className="ff-mono text-[11px] text-emerald-400">{Math.max(0, Math.round(g - c))} {u} left</div>
               </div>
             ))}
           </div>
@@ -305,22 +305,22 @@ function CalorieCircle({ consumed, goal }: { consumed: number; goal: number }) {
   const r = 70; const c = 2 * Math.PI * r;
   const remaining = Math.max(0, goal - consumed);
   return (
-    <div className="rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 to-transparent p-5 flex items-center gap-5">
+    <div className="ff-card ff-card-glow p-5 flex items-center gap-5">
       <div className="relative">
         <svg width="170" height="170" viewBox="0 0 170 170" className="-rotate-90">
-          <circle cx="85" cy="85" r={r} strokeWidth="12" stroke="rgb(39,39,42)" fill="none" />
+          <circle cx="85" cy="85" r={r} strokeWidth="12" stroke="var(--ff-surf3)" fill="none" />
           <circle cx="85" cy="85" r={r} strokeWidth="12" stroke="url(#gradC)" fill="none"
             strokeDasharray={c} strokeDashoffset={c - (c * pct) / 100} strokeLinecap="round"
             style={{ transition: "stroke-dashoffset 0.6s ease" }} />
-          <defs><linearGradient id="gradC" x1="0" x2="1"><stop offset="0" stopColor="#34d399" /><stop offset="1" stopColor="#2dd4bf" /></linearGradient></defs>
+          <defs><linearGradient id="gradC" x1="0" x2="1"><stop offset="0" stopColor="var(--ff-neon-dim)" /><stop offset="1" stopColor="var(--ff-neon)" /></linearGradient></defs>
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div className="text-3xl font-black text-white tabular-nums">{Math.round(consumed)}</div>
-          <div className="text-[10px] uppercase tracking-widest text-zinc-500">of {Math.round(goal)}</div>
+          <div className="ff-mono text-3xl font-bold tabular-nums">{Math.round(consumed)}</div>
+          <div className="ff-label">of {Math.round(goal)}</div>
         </div>
       </div>
       <div className="min-w-0 flex-1">
-        <div className="text-xs uppercase tracking-widest text-emerald-400 font-bold mb-1">Calories</div>
+        <div className="ff-display text-[10px] uppercase text-emerald-400 font-bold mb-1">Calories</div>
         <Row label="Goal" value={`${Math.round(goal)} kcal`} />
         <Row label="Consumed" value={`${Math.round(consumed)} kcal`} />
         <Row label="Remaining" value={`${Math.round(remaining)} kcal`} highlight />
@@ -331,9 +331,9 @@ function CalorieCircle({ consumed, goal }: { consumed: number; goal: number }) {
 
 function Row({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className="flex items-center justify-between py-1 text-sm">
+    <div className="ff-mono flex items-center justify-between py-1 text-xs">
       <span className="text-zinc-400">{label}</span>
-      <span className={highlight ? "text-emerald-400 font-bold" : "text-white font-semibold"}>{value}</span>
+      <span className={highlight ? "text-emerald-400 font-bold" : "font-semibold"}>{value}</span>
     </div>
   );
 }
@@ -341,16 +341,16 @@ function Row({ label, value, highlight }: { label: string; value: string; highli
 function MacroCard({ label, unit, consumed, goal, color }: { label: string; unit: string; consumed: number; goal: number; color: string }) {
   const pct = goal > 0 ? Math.min(100, (consumed / goal) * 100) : 0;
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4">
+    <div className="ff-card p-4">
       <div className="flex items-center justify-between mb-1">
-        <div className="text-xs font-bold uppercase tracking-wider text-zinc-400">{label}</div>
-        <div className="text-[10px] text-zinc-500">{Math.round(pct)}%</div>
+        <div className="ff-label">{label}</div>
+        <div className="ff-mono text-[10px] text-zinc-500">{Math.round(pct)}%</div>
       </div>
-      <div className="text-2xl font-black tabular-nums text-white">{Math.round(consumed)}<span className="text-xs text-zinc-500">/{Math.round(goal)}{unit}</span></div>
-      <div className="mt-2 h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+      <div className="ff-mono text-2xl font-bold tabular-nums">{Math.round(consumed)}<span className="text-xs text-zinc-500">/{Math.round(goal)}{unit}</span></div>
+      <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--ff-surf3)" }}>
         <div className={`h-full rounded-full bg-gradient-to-r ${color}`} style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
       </div>
-      <div className="mt-1 text-[11px] text-zinc-500">{Math.max(0, Math.round(goal - consumed))}{unit} remaining</div>
+      <div className="ff-mono mt-1 text-[11px] text-zinc-500">{Math.max(0, Math.round(goal - consumed))}{unit} remaining</div>
     </div>
   );
 }
@@ -363,24 +363,24 @@ function WaterCard({ consumedMl, goalMl, onAdd, onReset }: { consumedMl: number;
   const r = 60; const c = 2 * Math.PI * r;
   const goalReached = consumedMl >= goalMl;
   return (
-    <div className={`rounded-2xl border ${goalReached ? "border-emerald-500/50" : "border-sky-500/25"} bg-gradient-to-br from-sky-500/10 to-transparent p-5 mb-6`}>
+    <div className={`ff-card ${goalReached ? "ff-card-glow" : ""} p-5 mb-6`}>
       <div className="flex items-center gap-2 mb-4">
         <Droplet className="w-4 h-4 text-sky-400" />
-        <h3 className="font-bold text-white">Water Intake</h3>
-        {goalReached && <span className="ml-2 text-[10px] font-bold uppercase tracking-widest text-emerald-400">Goal reached ✓</span>}
+        <h3 className="ff-display text-sm font-bold uppercase">Water Intake</h3>
+        {goalReached && <span className="ff-display ml-2 text-[10px] font-bold uppercase text-emerald-400">Goal reached ✓</span>}
       </div>
       <div className="flex flex-wrap items-center gap-5">
         <div className="relative shrink-0">
           <svg width="150" height="150" viewBox="0 0 150 150" className="-rotate-90">
-            <circle cx="75" cy="75" r={r} strokeWidth="12" stroke="rgb(39,39,42)" fill="none" />
+            <circle cx="75" cy="75" r={r} strokeWidth="12" stroke="var(--ff-surf3)" fill="none" />
             <circle cx="75" cy="75" r={r} strokeWidth="12" stroke="url(#gradW)" fill="none"
               strokeDasharray={c} strokeDashoffset={c - (c * pct) / 100} strokeLinecap="round"
               style={{ transition: "stroke-dashoffset 0.6s ease" }} />
-            <defs><linearGradient id="gradW" x1="0" x2="1"><stop offset="0" stopColor="#38bdf8" /><stop offset="1" stopColor="#22d3ee" /></linearGradient></defs>
+            <defs><linearGradient id="gradW" x1="0" x2="1"><stop offset="0" stopColor="#3B82F6" /><stop offset="1" stopColor="var(--ff-water)" /></linearGradient></defs>
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="text-2xl font-black text-white tabular-nums">{(consumedMl / 1000).toFixed(2)}L</div>
-            <div className="text-[10px] uppercase tracking-widest text-zinc-500">{Math.round(pct)}%</div>
+            <div className="ff-mono text-2xl font-bold tabular-nums">{(consumedMl / 1000).toFixed(2)}L</div>
+            <div className="ff-label">{Math.round(pct)}%</div>
           </div>
         </div>
         <div className="min-w-0 flex-1">
@@ -392,16 +392,16 @@ function WaterCard({ consumedMl, goalMl, onAdd, onReset }: { consumedMl: number;
           <div className="grid grid-cols-4 gap-2 mb-2">
             {[250, 500, 750, 1000].map((ml) => (
               <button key={ml} onClick={() => onAdd(ml)}
-                className="h-10 rounded-lg border border-sky-500/30 bg-sky-500/10 text-sky-300 text-xs font-semibold hover:bg-sky-500/20 hover:border-sky-400 transition">
+                className="ff-btn h-10 text-xs font-semibold text-sky-300" style={{ borderColor: "rgba(96,165,250,0.35)", background: "rgba(96,165,250,0.10)" }}>
                 +{ml < 1000 ? `${ml}ml` : `${ml / 1000}L`}
               </button>
             ))}
           </div>
           <div className="flex items-center gap-2">
             <input type="number" min={1} value={manual} onChange={(e) => setManual(+e.target.value)}
-              className="flex-1 h-10 rounded-lg bg-zinc-900 border border-zinc-800 focus:border-sky-500 outline-none px-3 text-sm text-white" placeholder="ml" />
-            <button onClick={() => manual > 0 && onAdd(manual)} className="h-10 px-4 rounded-lg bg-gradient-to-r from-sky-400 to-cyan-500 text-black font-bold text-sm flex items-center gap-1"><Plus className="w-4 h-4" />Add</button>
-            <button onClick={onReset} title="Reset today's water" className="h-10 w-10 rounded-lg border border-zinc-800 hover:border-red-500/40 text-zinc-400 hover:text-red-400 flex items-center justify-center"><RotateCcw className="w-4 h-4" /></button>
+              className="ff-input flex-1 h-10 outline-none px-3 text-sm" placeholder="ml" />
+            <button onClick={() => manual > 0 && onAdd(manual)} className="ff-btn h-10 px-4 text-sm font-bold flex items-center gap-1" style={{ background: "var(--ff-water)", borderColor: "var(--ff-water)", color: "#04121F" }}><Plus className="w-4 h-4" />Add</button>
+            <button onClick={onReset} title="Reset today's water" className="ff-btn h-10 w-10 text-zinc-400 hover:text-red-400 flex items-center justify-center"><RotateCcw className="w-4 h-4" /></button>
           </div>
         </div>
       </div>
@@ -490,11 +490,11 @@ function FoodPicker({ userId, date, mealKey, onClose, onAdded }: { userId: strin
 
   return (
     <Overlay onClose={onClose}>
-      <div className="w-full max-w-3xl bg-zinc-950 border border-emerald-500/25 rounded-2xl overflow-hidden">
+      <div className="ff-card w-full max-w-3xl overflow-hidden">
         <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
           <div>
             <div className="text-xs text-zinc-500">Add food to</div>
-            <div className="font-bold capitalize">{mealKey.replace("_", "-")}</div>
+            <div className="ff-display text-sm font-bold uppercase">{mealKey.replace("_", "-")}</div>
           </div>
           <button onClick={onClose} className="text-zinc-500 hover:text-white"><X className="w-5 h-5" /></button>
         </div>
@@ -504,7 +504,7 @@ function FoodPicker({ userId, date, mealKey, onClose, onAdded }: { userId: strin
             <div className="p-4 border-b border-zinc-800">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-                <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search foods, brands, categories..." className="w-full h-11 pl-10 pr-3 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-emerald-500 outline-none text-sm" />
+                <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search foods, brands, categories..." className="ff-input w-full h-11 pl-10 pr-3 outline-none text-sm" />
               </div>
             </div>
             <div className="max-h-[60vh] overflow-y-auto">
@@ -548,15 +548,15 @@ function FoodPicker({ userId, date, mealKey, onClose, onAdded }: { userId: strin
             </div>
             <div className="grid grid-cols-5 gap-2">
               {preview && Object.entries(preview).map(([k, v]) => (
-                <div key={k} className="rounded-lg bg-zinc-900 border border-zinc-800 p-2 text-center">
+                <div key={k} className="ff-card p-2 text-center">
                   <div className="text-[10px] uppercase text-zinc-500">{k}</div>
-                  <div className="text-lg font-bold text-emerald-400 tabular-nums">{v}</div>
+                  <div className="ff-mono text-lg font-bold text-emerald-400 tabular-nums">{v}</div>
                 </div>
               ))}
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setSelected(null)} className="flex-1 h-11 rounded-xl border border-zinc-800 text-sm">Back</button>
-              <button onClick={add} className="flex-1 h-11 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-bold flex items-center justify-center gap-2"><Plus className="w-4 h-4" />Add to meal</button>
+              <button onClick={() => setSelected(null)} className="ff-btn flex-1 h-11 text-sm">Back</button>
+              <button onClick={add} className="ff-btn-neon flex-1 h-11 flex items-center justify-center gap-2"><Plus className="w-4 h-4" />Add to meal</button>
             </div>
           </div>
         )}
@@ -607,22 +607,22 @@ function GoalsModal({ profile, goals, onClose, onSaved }: { profile: any; goals:
 
   return (
     <Overlay onClose={onClose}>
-      <div className="w-full max-w-lg bg-zinc-950 border border-emerald-500/25 rounded-2xl overflow-hidden">
+      <div className="ff-card w-full max-w-lg overflow-hidden">
         <div className="p-5 border-b border-zinc-800 flex items-center justify-between">
-          <div className="font-bold">Nutrition Goals</div>
+          <div className="ff-display text-sm font-bold uppercase">Nutrition Goals</div>
           <button onClick={onClose} className="text-zinc-500 hover:text-white"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-5 space-y-4">
           <div className="flex gap-2">
-            <label className={`flex-1 h-11 rounded-xl border flex items-center justify-center gap-2 cursor-pointer ${mode === "auto" ? "border-emerald-500 bg-emerald-500/10 text-emerald-300" : "border-zinc-800 text-zinc-400"}`}>
+            <label className={`flex-1 h-11 rounded-xl border flex items-center justify-center gap-2 cursor-pointer ${mode === "auto" ? "border-emerald-500 bg-emerald-500/10 text-emerald-300 ff-display text-xs uppercase" : "border-zinc-800 text-zinc-400"}`}>
               <input type="radio" checked={mode === "auto"} onChange={() => setMode("auto")} className="hidden" />Auto (TDEE)
             </label>
-            <label className={`flex-1 h-11 rounded-xl border flex items-center justify-center gap-2 cursor-pointer ${mode === "custom" ? "border-emerald-500 bg-emerald-500/10 text-emerald-300" : "border-zinc-800 text-zinc-400"}`}>
+            <label className={`flex-1 h-11 rounded-xl border flex items-center justify-center gap-2 cursor-pointer ${mode === "custom" ? "border-emerald-500 bg-emerald-500/10 text-emerald-300 ff-display text-xs uppercase" : "border-zinc-800 text-zinc-400"}`}>
               <input type="radio" checked={mode === "custom"} onChange={() => setMode("custom")} className="hidden" />Custom
             </label>
           </div>
           {mode === "auto" ? (
-            <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-4 text-sm space-y-1">
+            <div className="ff-card p-4 text-sm space-y-1">
               <div className="text-xs text-zinc-500 mb-2">Calculated from your profile (Mifflin–St Jeor):</div>
               <Row label="Calories" value={`${auto.calories} kcal`} highlight />
               <Row label="Protein" value={`${auto.protein} g`} />
@@ -644,7 +644,7 @@ function GoalsModal({ profile, goals, onClose, onSaved }: { profile: any; goals:
               <input type="number" min={500} value={f.water_goal_ml} onChange={(e) => setF({ ...f, water_goal_ml: +e.target.value })} className={inp} />
             </Field>
           )}
-          <button onClick={save} disabled={busy} className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-bold flex items-center justify-center gap-2 disabled:opacity-50">
+          <button onClick={save} disabled={busy} className="ff-btn-neon w-full h-11 flex items-center justify-center gap-2 disabled:opacity-50">
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}Save goals
           </button>
         </div>
@@ -667,9 +667,9 @@ function CustomFoodModal({ userId, onClose }: { userId: string; onClose: () => v
   }
   return (
     <Overlay onClose={onClose}>
-      <div className="w-full max-w-lg bg-zinc-950 border border-emerald-500/25 rounded-2xl overflow-hidden">
+      <div className="ff-card w-full max-w-lg overflow-hidden">
         <div className="p-5 border-b border-zinc-800 flex items-center justify-between">
-          <div className="font-bold">Create custom food</div>
+          <div className="ff-display text-sm font-bold uppercase">Create custom food</div>
           <button onClick={onClose} className="text-zinc-500 hover:text-white"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-5 space-y-3">
@@ -690,7 +690,7 @@ function CustomFoodModal({ userId, onClose }: { userId: string; onClose: () => v
               </Field>
             ))}
           </div>
-          <button onClick={save} disabled={busy} className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-bold flex items-center justify-center gap-2 disabled:opacity-50">
+          <button onClick={save} disabled={busy} className="ff-btn-neon w-full h-11 flex items-center justify-center gap-2 disabled:opacity-50">
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}Save food
           </button>
         </div>
@@ -729,7 +729,7 @@ function AnalyticsModal({ userId, target, onClose }: { userId: string; target: M
   })();
   return (
     <Overlay onClose={onClose}>
-      <div className="w-full max-w-3xl bg-zinc-950 border border-emerald-500/25 rounded-2xl overflow-hidden">
+      <div className="ff-card w-full max-w-3xl overflow-hidden">
         <div className="p-5 border-b border-zinc-800 flex items-center justify-between flex-wrap gap-2">
           <div className="font-bold">Nutrition Analytics</div>
           <div className="flex gap-2">
@@ -784,7 +784,7 @@ function Overlay({ children, onClose }: { children: React.ReactNode; onClose: ()
     </div>
   );
 }
-const inp = "w-full h-10 rounded-lg bg-zinc-900 border border-zinc-800 focus:border-emerald-500 outline-none px-3 text-sm text-white";
+const inp = "ff-input w-full h-10 outline-none px-3 text-sm";
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <label className="block"><span className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">{label}</span>{children}</label>;
+  return <label className="block"><span className="ff-label block mb-1">{label}</span>{children}</label>;
 }
