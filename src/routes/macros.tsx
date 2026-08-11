@@ -490,11 +490,11 @@ function FoodPicker({ userId, date, mealKey, onClose, onAdded }: { userId: strin
 
   return (
     <Overlay onClose={onClose}>
-      <div className="w-full max-w-3xl bg-zinc-950 border border-emerald-500/25 rounded-2xl overflow-hidden">
+      <div className="ff-card w-full max-w-3xl overflow-hidden">
         <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
           <div>
             <div className="text-xs text-zinc-500">Add food to</div>
-            <div className="font-bold capitalize">{mealKey.replace("_", "-")}</div>
+            <div className="ff-display text-sm font-bold uppercase">{mealKey.replace("_", "-")}</div>
           </div>
           <button onClick={onClose} className="text-zinc-500 hover:text-white"><X className="w-5 h-5" /></button>
         </div>
@@ -504,7 +504,7 @@ function FoodPicker({ userId, date, mealKey, onClose, onAdded }: { userId: strin
             <div className="p-4 border-b border-zinc-800">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-                <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search foods, brands, categories..." className="w-full h-11 pl-10 pr-3 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-emerald-500 outline-none text-sm" />
+                <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search foods, brands, categories..." className="ff-input w-full h-11 pl-10 pr-3 outline-none text-sm" />
               </div>
             </div>
             <div className="max-h-[60vh] overflow-y-auto">
@@ -548,15 +548,15 @@ function FoodPicker({ userId, date, mealKey, onClose, onAdded }: { userId: strin
             </div>
             <div className="grid grid-cols-5 gap-2">
               {preview && Object.entries(preview).map(([k, v]) => (
-                <div key={k} className="rounded-lg bg-zinc-900 border border-zinc-800 p-2 text-center">
+                <div key={k} className="ff-card p-2 text-center">
                   <div className="text-[10px] uppercase text-zinc-500">{k}</div>
-                  <div className="text-lg font-bold text-emerald-400 tabular-nums">{v}</div>
+                  <div className="ff-mono text-lg font-bold text-emerald-400 tabular-nums">{v}</div>
                 </div>
               ))}
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setSelected(null)} className="flex-1 h-11 rounded-xl border border-zinc-800 text-sm">Back</button>
-              <button onClick={add} className="flex-1 h-11 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-bold flex items-center justify-center gap-2"><Plus className="w-4 h-4" />Add to meal</button>
+              <button onClick={() => setSelected(null)} className="ff-btn flex-1 h-11 text-sm">Back</button>
+              <button onClick={add} className="ff-btn-neon flex-1 h-11 flex items-center justify-center gap-2"><Plus className="w-4 h-4" />Add to meal</button>
             </div>
           </div>
         )}
@@ -607,22 +607,22 @@ function GoalsModal({ profile, goals, onClose, onSaved }: { profile: any; goals:
 
   return (
     <Overlay onClose={onClose}>
-      <div className="w-full max-w-lg bg-zinc-950 border border-emerald-500/25 rounded-2xl overflow-hidden">
+      <div className="ff-card w-full max-w-lg overflow-hidden">
         <div className="p-5 border-b border-zinc-800 flex items-center justify-between">
-          <div className="font-bold">Nutrition Goals</div>
+          <div className="ff-display text-sm font-bold uppercase">Nutrition Goals</div>
           <button onClick={onClose} className="text-zinc-500 hover:text-white"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-5 space-y-4">
           <div className="flex gap-2">
-            <label className={`flex-1 h-11 rounded-xl border flex items-center justify-center gap-2 cursor-pointer ${mode === "auto" ? "border-emerald-500 bg-emerald-500/10 text-emerald-300" : "border-zinc-800 text-zinc-400"}`}>
+            <label className={`flex-1 h-11 rounded-xl border flex items-center justify-center gap-2 cursor-pointer ${mode === "auto" ? "border-emerald-500 bg-emerald-500/10 text-emerald-300 ff-display text-xs uppercase" : "border-zinc-800 text-zinc-400"}`}>
               <input type="radio" checked={mode === "auto"} onChange={() => setMode("auto")} className="hidden" />Auto (TDEE)
             </label>
-            <label className={`flex-1 h-11 rounded-xl border flex items-center justify-center gap-2 cursor-pointer ${mode === "custom" ? "border-emerald-500 bg-emerald-500/10 text-emerald-300" : "border-zinc-800 text-zinc-400"}`}>
+            <label className={`flex-1 h-11 rounded-xl border flex items-center justify-center gap-2 cursor-pointer ${mode === "custom" ? "border-emerald-500 bg-emerald-500/10 text-emerald-300 ff-display text-xs uppercase" : "border-zinc-800 text-zinc-400"}`}>
               <input type="radio" checked={mode === "custom"} onChange={() => setMode("custom")} className="hidden" />Custom
             </label>
           </div>
           {mode === "auto" ? (
-            <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-4 text-sm space-y-1">
+            <div className="ff-card p-4 text-sm space-y-1">
               <div className="text-xs text-zinc-500 mb-2">Calculated from your profile (Mifflin–St Jeor):</div>
               <Row label="Calories" value={`${auto.calories} kcal`} highlight />
               <Row label="Protein" value={`${auto.protein} g`} />
@@ -644,7 +644,7 @@ function GoalsModal({ profile, goals, onClose, onSaved }: { profile: any; goals:
               <input type="number" min={500} value={f.water_goal_ml} onChange={(e) => setF({ ...f, water_goal_ml: +e.target.value })} className={inp} />
             </Field>
           )}
-          <button onClick={save} disabled={busy} className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-bold flex items-center justify-center gap-2 disabled:opacity-50">
+          <button onClick={save} disabled={busy} className="ff-btn-neon w-full h-11 flex items-center justify-center gap-2 disabled:opacity-50">
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}Save goals
           </button>
         </div>
@@ -667,9 +667,9 @@ function CustomFoodModal({ userId, onClose }: { userId: string; onClose: () => v
   }
   return (
     <Overlay onClose={onClose}>
-      <div className="w-full max-w-lg bg-zinc-950 border border-emerald-500/25 rounded-2xl overflow-hidden">
+      <div className="ff-card w-full max-w-lg overflow-hidden">
         <div className="p-5 border-b border-zinc-800 flex items-center justify-between">
-          <div className="font-bold">Create custom food</div>
+          <div className="ff-display text-sm font-bold uppercase">Create custom food</div>
           <button onClick={onClose} className="text-zinc-500 hover:text-white"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-5 space-y-3">
@@ -690,7 +690,7 @@ function CustomFoodModal({ userId, onClose }: { userId: string; onClose: () => v
               </Field>
             ))}
           </div>
-          <button onClick={save} disabled={busy} className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-bold flex items-center justify-center gap-2 disabled:opacity-50">
+          <button onClick={save} disabled={busy} className="ff-btn-neon w-full h-11 flex items-center justify-center gap-2 disabled:opacity-50">
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}Save food
           </button>
         </div>
@@ -729,7 +729,7 @@ function AnalyticsModal({ userId, target, onClose }: { userId: string; target: M
   })();
   return (
     <Overlay onClose={onClose}>
-      <div className="w-full max-w-3xl bg-zinc-950 border border-emerald-500/25 rounded-2xl overflow-hidden">
+      <div className="ff-card w-full max-w-3xl overflow-hidden">
         <div className="p-5 border-b border-zinc-800 flex items-center justify-between flex-wrap gap-2">
           <div className="font-bold">Nutrition Analytics</div>
           <div className="flex gap-2">
