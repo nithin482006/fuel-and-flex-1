@@ -784,7 +784,7 @@ function Overlay({ children, onClose }: { children: React.ReactNode; onClose: ()
     </div>
   );
 }
-const inp = "w-full h-10 rounded-lg bg-zinc-900 border border-zinc-800 focus:border-emerald-500 outline-none px-3 text-sm text-white";
+const inp = "ff-input w-full h-10 outline-none px-3 text-sm";
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <label className="block"><span className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">{label}</span>{children}</label>;
+  return <label className="block"><span className="ff-label block mb-1">{label}</span>{children}</label>;
 }
