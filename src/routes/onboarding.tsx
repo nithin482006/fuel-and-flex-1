@@ -2,7 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast, Toaster } from "sonner";
-import { ChevronLeft, ChevronRight, Loader2, Dumbbell } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export const Route = createFileRoute("/onboarding")({
   ssr: false,
@@ -107,31 +108,26 @@ function Onboarding() {
   if (!ready) return <div className="min-h-screen bg-black flex items-center justify-center text-emerald-400"><Loader2 className="w-6 h-6 animate-spin" /></div>;
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 py-10">
+    <div className="ff-page min-h-screen px-4 py-10">
       <Toaster theme="dark" position="top-center" />
       <div className="max-w-xl mx-auto">
-        <div className="flex items-center gap-2 mb-8">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
-            <Dumbbell className="w-4 h-4 text-black" />
-          </div>
-          <span className="text-lg font-bold">Fuel <span className="text-emerald-400">& Flex</span></span>
-        </div>
+        <div className="mb-8"><BrandLogo /></div>
 
         {/* Progress */}
         <div className="mb-6">
-          <div className="flex justify-between text-xs text-zinc-400 mb-2">
+          <div className="ff-mono flex justify-between text-[11px] text-zinc-400 mb-2">
             <span>Step {step + 1} of {STEPS.length}</span>
             <span>{STEPS[step]}</span>
           </div>
-          <div className="h-2 bg-zinc-900 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-emerald-400 to-teal-500 transition-all" style={{ width: `${((step + 1) / STEPS.length) * 100}%` }} />
+          <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--ff-surf3)" }}>
+            <div className="h-full transition-all" style={{ width: `${((step + 1) / STEPS.length) * 100}%`, background: "linear-gradient(90deg,var(--ff-neon-dim),var(--ff-neon))" }} />
           </div>
         </div>
 
-        <div className="rounded-2xl border border-emerald-500/20 bg-zinc-950/80 p-6 space-y-4">
+        <div className="ff-card p-6 space-y-4">
           {step === 0 && (
             <>
-              <h2 className="text-lg font-semibold">Tell us about you</h2>
+              <h2 className="ff-display text-base font-bold uppercase">Tell us about you</h2>
               <Field label="Full name *">
                 <input value={d.full_name} onChange={(e) => setD({ ...d, full_name: e.target.value })} className={inp} />
               </Field>
@@ -151,7 +147,7 @@ function Onboarding() {
           )}
           {step === 1 && (
             <>
-              <h2 className="text-lg font-semibold">Your body metrics</h2>
+              <h2 className="ff-display text-base font-bold uppercase">Your body metrics</h2>
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Height (cm) *">
                   <input type="number" step="0.1" value={d.height_cm} onChange={(e) => setD({ ...d, height_cm: e.target.value })} className={inp} />
@@ -161,11 +157,11 @@ function Onboarding() {
                 </Field>
               </div>
               {bmi != null && (
-                <div className="mt-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
-                  <div className="text-xs text-zinc-400">Your BMI (calculated automatically)</div>
+                <div className="ff-card ff-card-glow mt-2 p-4">
+                  <div className="ff-label">Your BMI (calculated automatically)</div>
                   <div className="mt-1 flex items-baseline gap-3">
-                    <span className="text-3xl font-bold text-emerald-400">{bmi}</span>
-                    <span className="text-sm text-zinc-300">{bmiCat}</span>
+                    <span className="ff-mono text-3xl font-bold text-emerald-400">{bmi}</span>
+                    <span className="ff-mono text-xs text-zinc-300">{bmiCat}</span>
                   </div>
                 </div>
               )}
@@ -173,7 +169,7 @@ function Onboarding() {
           )}
           {step === 2 && (
             <>
-              <h2 className="text-lg font-semibold">Your goals <span className="text-xs text-zinc-500 font-normal">(optional)</span></h2>
+              <h2 className="ff-display text-base font-bold uppercase">Your goals <span className="text-[10px] text-zinc-500 font-normal">(optional)</span></h2>
               <Field label="Fitness goal">
                 <select value={d.fitness_goal} onChange={(e) => setD({ ...d, fitness_goal: e.target.value })} className={inp}>
                   <option value="">Select...</option>
@@ -198,10 +194,10 @@ function Onboarding() {
           )}
 
           <div className="flex justify-between pt-2">
-            <button disabled={step === 0 || busy} onClick={() => setStep(step - 1)} className="h-11 px-4 rounded-xl border border-zinc-800 text-zinc-300 hover:bg-zinc-900 disabled:opacity-30 flex items-center gap-1">
+            <button disabled={step === 0 || busy} onClick={() => setStep(step - 1)} className="ff-btn h-11 px-4 disabled:opacity-30 flex items-center gap-1">
               <ChevronLeft className="w-4 h-4" />Back
             </button>
-            <button disabled={busy} onClick={next} className="h-11 px-5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-semibold hover:opacity-90 flex items-center gap-1 disabled:opacity-50">
+            <button disabled={busy} onClick={next} className="ff-btn-neon h-11 px-5 flex items-center gap-1 disabled:opacity-50">
               {busy && <Loader2 className="w-4 h-4 animate-spin" />}
               {step === STEPS.length - 1 ? "Finish" : "Next"}
               {step < STEPS.length - 1 && <ChevronRight className="w-4 h-4" />}
@@ -213,12 +209,12 @@ function Onboarding() {
   );
 }
 
-const inp = "w-full h-11 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 outline-none px-3 text-sm text-white";
+const inp = "ff-input w-full h-11 outline-none px-3 text-sm";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block text-xs font-medium text-zinc-400 mb-1.5">{label}</span>
+      <span className="ff-label block mb-1.5">{label}</span>
       {children}
     </label>
   );
