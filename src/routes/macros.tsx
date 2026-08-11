@@ -218,14 +218,14 @@ function MacrosPage() {
               cb: a.cb + Number(e.carbs), f: a.f + Number(e.fat), fb: a.fb + Number(e.fiber),
             }), { c: 0, p: 0, cb: 0, f: 0, fb: 0 });
             return (
-              <div key={m.key} className="rounded-2xl border border-emerald-500/15 bg-zinc-950/70 p-4">
+              <div key={m.key} className="ff-card p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Utensils className="w-4 h-4 text-emerald-400" />
-                    <h3 className="font-bold">{m.label}</h3>
-                    <span className="text-xs text-zinc-500">· {Math.round(t.c)} kcal</span>
+                    <h3 className="ff-display text-sm font-bold uppercase">{m.label}</h3>
+                    <span className="ff-mono text-[11px] text-zinc-500">· {Math.round(t.c)} kcal</span>
                   </div>
-                  <button onClick={() => setPickerMeal(m.key)} className="h-8 px-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-1 hover:bg-emerald-500/20"><Plus className="w-3.5 h-3.5" />Add food</button>
+                  <button onClick={() => setPickerMeal(m.key)} className="ff-btn h-8 px-3 text-xs flex items-center gap-1 text-emerald-300" style={{ borderColor: "var(--ff-bdr3)", background: "rgba(0,255,135,0.08)" }}><Plus className="w-3.5 h-3.5" />Add food</button>
                 </div>
                 <div className="space-y-1.5">
                   {mealEntries.length === 0 && <div className="text-xs text-zinc-600 py-2">No foods logged.</div>}
@@ -233,10 +233,10 @@ function MacrosPage() {
                     <div key={e.id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-zinc-900/60 border border-zinc-800/50 group">
                       <div className="min-w-0">
                         <div className="text-sm font-medium truncate">{e.food_name}</div>
-                        <div className="text-[11px] text-zinc-500">{Number(e.quantity) * Number(e.serving_size)} {e.serving_unit} · P {Math.round(Number(e.protein))} · C {Math.round(Number(e.carbs))} · F {Math.round(Number(e.fat))}</div>
+                        <div className="ff-mono text-[11px] text-zinc-500">{Number(e.quantity) * Number(e.serving_size)} {e.serving_unit} · P {Math.round(Number(e.protein))} · C {Math.round(Number(e.carbs))} · F {Math.round(Number(e.fat))}</div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <div className="text-sm font-bold text-emerald-400 tabular-nums">{Math.round(Number(e.calories))}</div>
+                        <div className="ff-mono text-sm font-bold text-emerald-400 tabular-nums">{Math.round(Number(e.calories))}</div>
                         <button onClick={() => deleteEntry(e.id)} className="text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </div>
@@ -256,8 +256,8 @@ function MacrosPage() {
         </div>
 
         {/* Today summary */}
-        <div className="mt-6 rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-transparent p-5">
-          <div className="flex items-center gap-2 mb-3"><Flame className="w-4 h-4 text-emerald-400" /><h3 className="font-bold">Today's Nutrition</h3></div>
+        <div className="ff-card ff-card-glow mt-6 p-5">
+          <div className="flex items-center gap-2 mb-3"><Flame className="w-4 h-4 text-emerald-400" /><h3 className="ff-display text-sm font-bold uppercase">Today's Nutrition</h3></div>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {([
               ["Calories", totals.calories, target.calories, "kcal"],
@@ -266,10 +266,10 @@ function MacrosPage() {
               ["Fat", totals.fat, target.fat, "g"],
               ["Fiber", totals.fiber, target.fiber, "g"],
             ] as const).map(([label, c, g, u]) => (
-              <div key={label} className="rounded-xl bg-zinc-950/70 border border-zinc-800 p-3">
-                <div className="text-[10px] uppercase tracking-wider text-zinc-500">{label}</div>
-                <div className="text-lg font-bold text-white tabular-nums">{Math.round(c)}<span className="text-xs text-zinc-500"> / {Math.round(g)} {u}</span></div>
-                <div className="text-[11px] text-emerald-400">{Math.max(0, Math.round(g - c))} {u} left</div>
+              <div key={label} className="ff-card p-3">
+                <div className="ff-label">{label}</div>
+                <div className="ff-mono text-lg font-bold tabular-nums">{Math.round(c)}<span className="text-xs text-zinc-500"> / {Math.round(g)} {u}</span></div>
+                <div className="ff-mono text-[11px] text-emerald-400">{Math.max(0, Math.round(g - c))} {u} left</div>
               </div>
             ))}
           </div>
@@ -305,22 +305,22 @@ function CalorieCircle({ consumed, goal }: { consumed: number; goal: number }) {
   const r = 70; const c = 2 * Math.PI * r;
   const remaining = Math.max(0, goal - consumed);
   return (
-    <div className="rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 to-transparent p-5 flex items-center gap-5">
+    <div className="ff-card ff-card-glow p-5 flex items-center gap-5">
       <div className="relative">
         <svg width="170" height="170" viewBox="0 0 170 170" className="-rotate-90">
-          <circle cx="85" cy="85" r={r} strokeWidth="12" stroke="rgb(39,39,42)" fill="none" />
+          <circle cx="85" cy="85" r={r} strokeWidth="12" stroke="var(--ff-surf3)" fill="none" />
           <circle cx="85" cy="85" r={r} strokeWidth="12" stroke="url(#gradC)" fill="none"
             strokeDasharray={c} strokeDashoffset={c - (c * pct) / 100} strokeLinecap="round"
             style={{ transition: "stroke-dashoffset 0.6s ease" }} />
-          <defs><linearGradient id="gradC" x1="0" x2="1"><stop offset="0" stopColor="#34d399" /><stop offset="1" stopColor="#2dd4bf" /></linearGradient></defs>
+          <defs><linearGradient id="gradC" x1="0" x2="1"><stop offset="0" stopColor="var(--ff-neon-dim)" /><stop offset="1" stopColor="var(--ff-neon)" /></linearGradient></defs>
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div className="text-3xl font-black text-white tabular-nums">{Math.round(consumed)}</div>
-          <div className="text-[10px] uppercase tracking-widest text-zinc-500">of {Math.round(goal)}</div>
+          <div className="ff-mono text-3xl font-bold tabular-nums">{Math.round(consumed)}</div>
+          <div className="ff-label">of {Math.round(goal)}</div>
         </div>
       </div>
       <div className="min-w-0 flex-1">
-        <div className="text-xs uppercase tracking-widest text-emerald-400 font-bold mb-1">Calories</div>
+        <div className="ff-display text-[10px] uppercase text-emerald-400 font-bold mb-1">Calories</div>
         <Row label="Goal" value={`${Math.round(goal)} kcal`} />
         <Row label="Consumed" value={`${Math.round(consumed)} kcal`} />
         <Row label="Remaining" value={`${Math.round(remaining)} kcal`} highlight />
@@ -331,9 +331,9 @@ function CalorieCircle({ consumed, goal }: { consumed: number; goal: number }) {
 
 function Row({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className="flex items-center justify-between py-1 text-sm">
+    <div className="ff-mono flex items-center justify-between py-1 text-xs">
       <span className="text-zinc-400">{label}</span>
-      <span className={highlight ? "text-emerald-400 font-bold" : "text-white font-semibold"}>{value}</span>
+      <span className={highlight ? "text-emerald-400 font-bold" : "font-semibold"}>{value}</span>
     </div>
   );
 }
@@ -341,16 +341,16 @@ function Row({ label, value, highlight }: { label: string; value: string; highli
 function MacroCard({ label, unit, consumed, goal, color }: { label: string; unit: string; consumed: number; goal: number; color: string }) {
   const pct = goal > 0 ? Math.min(100, (consumed / goal) * 100) : 0;
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4">
+    <div className="ff-card p-4">
       <div className="flex items-center justify-between mb-1">
-        <div className="text-xs font-bold uppercase tracking-wider text-zinc-400">{label}</div>
-        <div className="text-[10px] text-zinc-500">{Math.round(pct)}%</div>
+        <div className="ff-label">{label}</div>
+        <div className="ff-mono text-[10px] text-zinc-500">{Math.round(pct)}%</div>
       </div>
-      <div className="text-2xl font-black tabular-nums text-white">{Math.round(consumed)}<span className="text-xs text-zinc-500">/{Math.round(goal)}{unit}</span></div>
-      <div className="mt-2 h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+      <div className="ff-mono text-2xl font-bold tabular-nums">{Math.round(consumed)}<span className="text-xs text-zinc-500">/{Math.round(goal)}{unit}</span></div>
+      <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--ff-surf3)" }}>
         <div className={`h-full rounded-full bg-gradient-to-r ${color}`} style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
       </div>
-      <div className="mt-1 text-[11px] text-zinc-500">{Math.max(0, Math.round(goal - consumed))}{unit} remaining</div>
+      <div className="ff-mono mt-1 text-[11px] text-zinc-500">{Math.max(0, Math.round(goal - consumed))}{unit} remaining</div>
     </div>
   );
 }
