@@ -3,6 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast, Toaster } from "sonner";
 import { Loader2 } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export const Route = createFileRoute("/reset-password")({
   ssr: false,
@@ -27,12 +28,13 @@ function ResetPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
+    <div className="ff-page min-h-screen flex items-center justify-center px-4">
       <Toaster theme="dark" position="top-center" />
-      <form onSubmit={submit} className="w-full max-w-md rounded-2xl border border-emerald-500/20 bg-zinc-950 p-6 space-y-4">
-        <h1 className="text-xl font-semibold">Set a new password</h1>
-        <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="New password" className="w-full h-11 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-emerald-500 outline-none px-3 text-sm" />
-        <button disabled={busy} className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-semibold flex items-center justify-center gap-2 disabled:opacity-50">
+      <form onSubmit={submit} className="ff-card w-full max-w-md p-6 space-y-4">
+        <BrandLogo size="sm" />
+        <h1 className="ff-display text-base font-bold uppercase">Set a new password</h1>
+        <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="New password" className="ff-input w-full h-11 outline-none px-3 text-sm" />
+        <button disabled={busy} className="ff-btn-neon w-full h-11 flex items-center justify-center gap-2 disabled:opacity-50">
           {busy && <Loader2 className="w-4 h-4 animate-spin" />}Update password
         </button>
       </form>
