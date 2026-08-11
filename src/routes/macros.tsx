@@ -160,34 +160,34 @@ function MacrosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="ff-page min-h-screen">
       <Toaster theme="dark" position="top-center" />
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-1 text-sm text-zinc-400 hover:text-emerald-400"><ArrowLeft className="w-4 h-4" />Dashboard</Link>
-            <h1 className="text-2xl md:text-3xl font-black tracking-tight">
-              <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">Macros</span> Management
+            <Link to="/" className="ff-mono flex items-center gap-1 text-xs text-zinc-400 hover:text-emerald-400"><ArrowLeft className="w-4 h-4" />Dashboard</Link>
+            <h1 className="ff-display text-lg md:text-xl font-bold uppercase">
+              <span className="text-emerald-400">Macros</span> Management
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => setShowAnalytics(true)} className="h-9 px-3 rounded-lg border border-zinc-800 hover:border-emerald-500/40 text-xs flex items-center gap-1.5"><BarChart3 className="w-3.5 h-3.5" />Analytics</button>
-            <button onClick={() => setShowCustom(true)} className="h-9 px-3 rounded-lg border border-zinc-800 hover:border-emerald-500/40 text-xs flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />Custom food</button>
-            <button onClick={() => setShowGoals(true)} className="h-9 px-3 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 text-xs flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5" />Goals</button>
+            <button onClick={() => setShowAnalytics(true)} className="ff-btn h-9 px-3 text-xs flex items-center gap-1.5"><BarChart3 className="w-3.5 h-3.5" />Analytics</button>
+            <button onClick={() => setShowCustom(true)} className="ff-btn h-9 px-3 text-xs flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />Custom food</button>
+            <button onClick={() => setShowGoals(true)} className="ff-btn h-9 px-3 text-xs flex items-center gap-1.5 text-emerald-300" style={{ borderColor: "var(--ff-bdr3)", background: "rgba(0,255,135,0.08)" }}><Sparkles className="w-3.5 h-3.5" />Goals</button>
           </div>
         </div>
 
         {/* Date selector */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          <button onClick={() => setDate(addDaysISO(date, -1))} className="h-9 w-9 rounded-lg border border-zinc-800 hover:border-emerald-500/40 flex items-center justify-center"><ChevronLeft className="w-4 h-4" /></button>
-          <div className="h-9 px-4 rounded-lg border border-zinc-800 bg-zinc-950 flex items-center gap-2 text-sm">
+          <button onClick={() => setDate(addDaysISO(date, -1))} className="ff-btn h-9 w-9 flex items-center justify-center"><ChevronLeft className="w-4 h-4" /></button>
+          <div className="ff-btn ff-mono h-9 px-4 flex items-center gap-2 text-xs">
             <Calendar className="w-4 h-4 text-emerald-400" />
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="bg-transparent outline-none text-white [color-scheme:dark]" />
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="bg-transparent outline-none [color-scheme:dark]" />
             {date === todayISO() && <span className="text-[10px] font-bold text-emerald-400 uppercase">Today</span>}
           </div>
-          <button onClick={() => setDate(addDaysISO(date, 1))} className="h-9 w-9 rounded-lg border border-zinc-800 hover:border-emerald-500/40 flex items-center justify-center"><ChevronRight className="w-4 h-4" /></button>
-          <button onClick={copyYesterday} className="ml-2 h-9 px-3 rounded-lg border border-zinc-800 hover:border-emerald-500/40 text-xs flex items-center gap-1.5"><Copy className="w-3.5 h-3.5" />Copy yesterday</button>
+          <button onClick={() => setDate(addDaysISO(date, 1))} className="ff-btn h-9 w-9 flex items-center justify-center"><ChevronRight className="w-4 h-4" /></button>
+          <button onClick={copyYesterday} className="ff-btn ml-2 h-9 px-3 text-xs flex items-center gap-1.5"><Copy className="w-3.5 h-3.5" />Copy yesterday</button>
         </div>
 
         {/* Dashboard */}
