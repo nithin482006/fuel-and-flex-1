@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
-import { Dumbbell, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -70,22 +71,19 @@ function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="ff-page min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
       <Toaster theme="dark" position="top-center" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(16,185,129,0.15),transparent_50%),radial-gradient(circle_at_70%_80%,rgba(20,184,166,0.12),transparent_50%)] pointer-events-none" />
       <div className="relative w-full max-w-md">
-        <div className="flex items-center gap-2 justify-center mb-8">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.5)]">
-            <Dumbbell className="w-5 h-5 text-black" />
-          </div>
-          <span className="text-2xl font-bold tracking-tight">Fuel <span className="text-emerald-400">& Flex</span></span>
+        <div className="flex justify-center mb-8">
+          <BrandLogo size="lg" />
         </div>
 
-        <div className="rounded-2xl border border-emerald-500/20 bg-zinc-950/80 backdrop-blur p-6 shadow-[0_0_60px_rgba(16,185,129,0.15)]">
-          <h1 className="text-xl font-semibold">
+        <div className="ff-card ff-card-glow backdrop-blur p-6">
+          <h1 className="ff-display text-lg font-bold uppercase">
             {mode === "signin" ? "Welcome back" : mode === "signup" ? "Create your account" : "Reset your password"}
           </h1>
-          <p className="text-sm text-zinc-400 mt-1">
+          <p className="ff-mono text-xs text-zinc-400 mt-2">
             {mode === "signin" ? "Sign in to continue your training." : mode === "signup" ? "Start tracking your workouts today." : "We'll email you a reset link."}
           </p>
 
@@ -104,7 +102,7 @@ function AuthPage() {
               </Field>
             )}
 
-            <button type="submit" disabled={busy} className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-semibold hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2">
+            <button type="submit" disabled={busy} className="ff-btn-neon w-full h-11 disabled:opacity-50 flex items-center justify-center gap-2">
               {busy && <Loader2 className="w-4 h-4 animate-spin" />}
               {mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Send reset link"}
             </button>
@@ -130,12 +128,12 @@ function AuthPage() {
   );
 }
 
-const inputCls = "w-full h-11 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 outline-none px-3 text-sm text-white placeholder:text-zinc-500 transition";
+const inputCls = "ff-input w-full h-11 outline-none px-3 text-sm placeholder:text-zinc-500 transition";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block text-xs font-medium text-zinc-400 mb-1.5">{label}</span>
+      <span className="ff-label block mb-1.5">{label}</span>
       {children}
     </label>
   );
