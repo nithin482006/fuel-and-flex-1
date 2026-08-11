@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast, Toaster } from "sonner";
 import { ArrowLeft, Loader2, LogOut, Save } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export const Route = createFileRoute("/profile")({
   ssr: false,
@@ -70,21 +71,22 @@ function ProfilePage() {
     navigate({ to: "/auth" });
   }
 
-  if (!ready) return <div className="min-h-screen bg-black flex items-center justify-center text-emerald-400"><Loader2 className="w-6 h-6 animate-spin" /></div>;
+  if (!ready) return <div className="ff-page min-h-screen flex items-center justify-center text-emerald-400"><Loader2 className="w-6 h-6 animate-spin" /></div>;
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 py-8">
+    <div className="ff-page min-h-screen px-4 py-8">
       <Toaster theme="dark" position="top-center" />
       <div className="max-w-2xl mx-auto">
+        <div className="mb-6"><BrandLogo /></div>
         <div className="flex items-center justify-between mb-6">
-          <Link to="/" className="flex items-center gap-1 text-sm text-zinc-400 hover:text-emerald-400"><ArrowLeft className="w-4 h-4" />Dashboard</Link>
-          <button onClick={signOut} className="flex items-center gap-1 text-sm text-zinc-400 hover:text-red-400"><LogOut className="w-4 h-4" />Sign out</button>
+          <Link to="/" className="ff-mono flex items-center gap-1 text-xs text-zinc-400 hover:text-emerald-400"><ArrowLeft className="w-4 h-4" />Dashboard</Link>
+          <button onClick={signOut} className="ff-mono flex items-center gap-1 text-xs text-zinc-400 hover:text-red-400"><LogOut className="w-4 h-4" />Sign out</button>
         </div>
 
-        <h1 className="text-2xl font-bold mb-1">Your Profile</h1>
-        <p className="text-sm text-zinc-400 mb-6">{email}</p>
+        <h1 className="ff-display text-xl font-bold uppercase mb-1">Your Profile</h1>
+        <p className="ff-mono text-xs text-zinc-400 mb-6">{email}</p>
 
-        <div className="rounded-2xl border border-emerald-500/20 bg-zinc-950/80 p-6 space-y-4">
+        <div className="ff-card p-6 space-y-4">
           <Field label="Full name"><input className={inp} value={f.full_name} onChange={(e) => setF({ ...f, full_name: e.target.value })} /></Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Age"><input type="number" className={inp} value={f.age} onChange={(e) => setF({ ...f, age: e.target.value })} /></Field>
@@ -100,11 +102,11 @@ function ProfilePage() {
           </div>
 
           {bmi != null && (
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
-              <div className="text-xs text-zinc-400">BMI (auto-calculated)</div>
+            <div className="ff-card ff-card-glow p-4">
+              <div className="ff-label">BMI (auto-calculated)</div>
               <div className="mt-1 flex items-baseline gap-3">
-                <span className="text-3xl font-bold text-emerald-400">{bmi}</span>
-                <span className="text-sm text-zinc-300">{bmiCat}</span>
+                <span className="ff-mono text-3xl font-bold text-emerald-400">{bmi}</span>
+                <span className="ff-mono text-xs text-zinc-300">{bmiCat}</span>
               </div>
             </div>
           )}
@@ -121,7 +123,7 @@ function ProfilePage() {
           </Field>
           <Field label="Target weight (kg)"><input type="number" step="0.1" className={inp} value={f.target_weight} onChange={(e) => setF({ ...f, target_weight: e.target.value })} /></Field>
 
-          <button onClick={save} disabled={busy} className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-semibold flex items-center justify-center gap-2 disabled:opacity-50">
+          <button onClick={save} disabled={busy} className="ff-btn-neon w-full h-11 flex items-center justify-center gap-2 disabled:opacity-50">
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}Save changes
           </button>
         </div>
@@ -130,7 +132,7 @@ function ProfilePage() {
   );
 }
 
-const inp = "w-full h-11 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 outline-none px-3 text-sm text-white";
+const inp = "ff-input w-full h-11 outline-none px-3 text-sm";
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <label className="block"><span className="block text-xs font-medium text-zinc-400 mb-1.5">{label}</span>{children}</label>;
+  return <label className="block"><span className="ff-label block mb-1.5">{label}</span>{children}</label>;
 }
