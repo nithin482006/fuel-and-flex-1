@@ -684,6 +684,168 @@ function CustomFoodModal({ userId, onClose }: { userId: string; onClose: () => v
 }
 
 // ---------- Analytics ----------
+function WeeklyInsights({ userId, target, refreshKey }: { userId: string; target: MacroTargets; refreshKey: string }) {
+  const [rows, setRows] = useState<any[] | null>(null);
+  useEffect(() => {
+    if (!userId) return;
+    let alive = true;
+    (async () => {
+      const start = addDaysISO(todayISO(), -6);
+      const { data } = await supabase.from("diary_entries")
+        .select("entry_date,calories,protein,carbs,fat,fiber")
+        .eq("user_id", userId).gte("entry_date", start).lte("entry_date", todayISO());
+      if (!alive) return;
+      const map = new Map<string, any>();
+      for (let i = 0; i < 7; i++) {
+        const d = addDaysISO(start, i);
+        map.set(d, {
+          iso: d,
+          label: new Date(d + "T00:00:00").toLocaleDateString(undefined, { weekday: "short" }),
+          calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0,
+        });
+      }
+      (data || []).forEach((e: any) => {
+        const r = map.get(e.entry_date); if (!r) return;
+        r.calories += Number(e.calories); r.protein += Number(e.protein);
+        r.carbs += Number(e.carbs); r.fat += Number(e.fat); r.fiber += Number(e.fiber);
+      });
+      setRows(Array.from(map.values()));
+    })();
+    return () => { alive = false; };
+  }, [userId, refreshKey]);
+
+  const logged = (rows || []).filter((r) => r.calories > 0);
+  const avg = (k: string) => logged.length ? Math.round(logged.reduce((a, r) => a + r[k], 0) / logged.length) : 0;
+  const proteinDays = (rows || []).filter((r) => r.protein >= target.protein).length;
+  const calorieDays = (rows || []).filter((r) => r.calories >= target.calories * 0.9 && r.calories <= target.calories * 1.1).length;
+
+  const header = (
+    <div className="flex items-center gap-2 mb-4">
+      <BarChart3 className="w-4 h-4 text-emerald-400" />
+      <h3 className="ff-display text-sm font-bold uppercase">Weekly Nutrition Overview</h3>
+      <span className="ff-mono text-[11px] text-zinc-500 ml-auto">Last 7 days</span>
+    </div>
+  );
+
+  if (rows === null) {
+    return (
+      <div className="ff-card ff-card-glow mt-6 p-5">
+        {header}
+        <div className="h-40 flex items-center justify-center text-emerald-400"><Loader2 className="w-5 h-5 animate-spin" /></div>
+      </div>
+    );
+  }
+
+  if (logged.length < 2) {
+    return (
+      <div className="ff-card ff-card-glow mt-6 p-5">
+        {header}
+        <div className="flex flex-col items-center justify-center text-center py-10 px-4">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3" style={{ background: "rgba(0,255,135,0.08)", border: "1px solid var(--ff-bdr3)" }}>
+            <Sparkles className="w-5 h-5 text-emerald-400" />
+          </div>
+          <div className="ff-display text-sm font-bold uppercase mb-1">Not enough history yet</div>
+          <p className="text-xs text-zinc-400 max-w-xs">
+            Log meals on at least two different days and your calorie trend, averages and goal consistency will appear here.
+          </p>
+          <div className="ff-mono text-[11px] text-zinc-600 mt-3">{logged.length} of 7 days logged</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="ff-card ff-card-glow mt-6 p-5">
+      {header}
+
+      {/* Trend chart */}
+      <div className="h-52 -ml-2">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={rows} margin={{ top: 6, right: 8, bottom: 0, left: 0 }}>
+            <defs>
+              <linearGradient id="ffCalGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#00FF87" stopOpacity={0.35} />
+                <stop offset="100%" stopColor="#00FF87" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid stroke="rgba(0,255,135,0.08)" strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="label" stroke="#8BBFA0" fontSize={11} tickLine={false} axisLine={false} />
+            <YAxis stroke="#8BBFA0" fontSize={11} tickLine={false} axisLine={false} width={40} />
+            <Tooltip
+              cursor={{ stroke: "rgba(0,255,135,0.25)" }}
+              contentStyle={{ background: "#0B1610", border: "1px solid rgba(0,255,135,0.35)", borderRadius: 10, fontSize: 12 }}
+              labelStyle={{ color: "#8BBFA0" }}
+              formatter={(v: any) => [`${Math.round(Number(v))} kcal`, "Calories"]}
+            />
+            <Area
+              type="monotone" dataKey="calories" stroke="#00FF87" strokeWidth={2}
+              fill="url(#ffCalGrad)" dot={{ fill: "#00FF87", r: 3 }} activeDot={{ r: 5 }}
+              isAnimationActive animationDuration={900}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Averages + consistency */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
+        <div className="ff-card p-3">
+          <div className="ff-label">Avg Calories</div>
+          <div className="ff-mono text-lg font-bold tabular-nums text-emerald-400">{avg("calories")}<span className="text-xs text-zinc-500"> kcal</span></div>
+          <div className="ff-mono text-[11px] text-zinc-500">Goal {Math.round(target.calories)}</div>
+        </div>
+        <div className="ff-card p-3">
+          <div className="ff-label">Avg Protein</div>
+          <div className="ff-mono text-lg font-bold tabular-nums text-emerald-400">{avg("protein")}<span className="text-xs text-zinc-500"> g</span></div>
+          <div className="ff-mono text-[11px] text-zinc-500">Goal {Math.round(target.protein)}g</div>
+        </div>
+        <div className="ff-card p-3">
+          <div className="ff-label">Protein Goal Hit</div>
+          <div className="ff-mono text-lg font-bold tabular-nums">{proteinDays}<span className="text-xs text-zinc-500"> / 7 days</span></div>
+          <div className="mt-2 flex gap-1">
+            {rows.map((r) => (
+              <span key={r.iso} className="h-1.5 flex-1 rounded-full" style={{ background: r.protein >= target.protein ? "var(--ff-neon)" : "var(--ff-bdr2)" }} />
+            ))}
+          </div>
+        </div>
+        <div className="ff-card p-3">
+          <div className="ff-label">Calorie Goal Hit</div>
+          <div className="ff-mono text-lg font-bold tabular-nums">{calorieDays}<span className="text-xs text-zinc-500"> / 7 days</span></div>
+          <div className="mt-2 flex gap-1">
+            {rows.map((r) => (
+              <span key={r.iso} className="h-1.5 flex-1 rounded-full" style={{ background: (r.calories >= target.calories * 0.9 && r.calories <= target.calories * 1.1) ? "var(--ff-neon)" : "var(--ff-bdr2)" }} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Weekly summary */}
+      <div className="mt-4 pt-4 border-t border-zinc-800/50">
+        <div className="ff-label mb-2">Weekly Averages · {logged.length} logged days</div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          {([
+            ["Calories", avg("calories"), "kcal"],
+            ["Protein", avg("protein"), "g"],
+            ["Carbs", avg("carbs"), "g"],
+            ["Fat", avg("fat"), "g"],
+            ["Fiber", avg("fiber"), "g"],
+          ] as const).map(([label, v, u]) => (
+            <div key={label} className="rounded-xl px-3 py-2" style={{ background: "var(--ff-surf2)", border: "1px solid var(--ff-bdr)" }}>
+              <div className="ff-label">{label}</div>
+              <div className="ff-mono text-base font-bold tabular-nums">{v}<span className="text-[11px] text-zinc-500"> {u}</span></div>
+            </div>
+          ))}
+        </div>
+        <div className="ff-mono text-[11px] text-emerald-400/90 mt-3 flex items-center gap-1.5">
+          <Flame className="w-3.5 h-3.5" />
+          {proteinDays >= 5
+            ? `Strong week — you reached your protein goal ${proteinDays} out of 7 days.`
+            : `You reached your protein goal ${proteinDays} out of 7 days. Aim for 5+ to keep building.`}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AnalyticsModal({ userId, target, onClose }: { userId: string; target: MacroTargets; onClose: () => void }) {
   const [range, setRange] = useState<7 | 30 | 90>(7);
   const [metric, setMetric] = useState<"calories" | "protein" | "carbs" | "fat" | "fiber">("calories");
