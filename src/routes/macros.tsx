@@ -256,25 +256,8 @@ function MacrosPage() {
           })}
         </div>
 
-        {/* Today summary */}
-        <div className="ff-card ff-card-glow mt-6 p-5">
-          <div className="flex items-center gap-2 mb-3"><Flame className="w-4 h-4 text-emerald-400" /><h3 className="ff-display text-sm font-bold uppercase">Today's Nutrition</h3></div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            {([
-              ["Calories", totals.calories, target.calories, "kcal"],
-              ["Protein", totals.protein, target.protein, "g"],
-              ["Carbs", totals.carbs, target.carbs, "g"],
-              ["Fat", totals.fat, target.fat, "g"],
-              ["Fiber", totals.fiber, target.fiber, "g"],
-            ] as const).map(([label, c, g, u]) => (
-              <div key={label} className="ff-card p-3">
-                <div className="ff-label">{label}</div>
-                <div className="ff-mono text-lg font-bold tabular-nums">{Math.round(c)}<span className="text-xs text-zinc-500"> / {Math.round(g)} {u}</span></div>
-                <div className="ff-mono text-[11px] text-emerald-400">{Math.max(0, Math.round(g - c))} {u} left</div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Weekly insights */}
+        <WeeklyInsights userId={userId} target={target} refreshKey={`${date}:${entries.length}`} />
       </div>
 
       {pickerMeal && (
