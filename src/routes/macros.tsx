@@ -9,7 +9,7 @@ import {
 import { computeMacroTargets, MEALS, todayISO, addDaysISO, type MacroTargets } from "@/lib/macros";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  AreaChart, Area, defs as _defs,
+  AreaChart, Area,
 } from "recharts";
 
 export const Route = createFileRoute("/macros")({
