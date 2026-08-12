@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { WaterTracker } from "@/components/WaterTracker";
 import { useNavigate } from "@tanstack/react-router";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
 import { useDailyNutrition } from "@/hooks/useDailyNutrition";
@@ -1419,22 +1420,15 @@ function DashboardHero({ nutrition, data, tk, wd, dayData }) {
         <Ring value={workoutVal} goal={workoutGoal} color="#EF4444" label="Workout"/>
       </div>
 
-      <div style={{marginTop:14,padding:12,borderRadius:12,border:"1px solid rgba(59,130,246,0.25)",background:"rgba(59,130,246,0.06)",position:"relative",overflow:"hidden"}}>
+      <div style={{marginTop:14,position:"relative"}}>
         {celebrated && <div className="water-celebrate">🎉 Goal reached!</div>}
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,gap:8,flexWrap:"wrap"}}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <Droplet size={16} color="#3B82F6"/>
-            <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>Water Intake</div>
-          </div>
-          <div style={{fontFamily:"var(--font-m)",fontSize:12,color:"#60A5FA"}}>
-            {(waterMl/1000).toFixed(2)}L / {(waterGoal/1000).toFixed(2)}L
-          </div>
-        </div>
-        <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-          <button className="btn btn-ghost btn-sm" onClick={()=>nutrition.addWater(250)}>+250 ml</button>
-          <button className="btn btn-ghost btn-sm" onClick={()=>nutrition.addWater(500)}>+500 ml</button>
-          <button className="btn btn-ghost btn-sm" onClick={()=>nutrition.resetWater()}><RotateCcw size={12} style={{marginRight:4}}/>Reset</button>
-        </div>
+        <WaterTracker
+          variant="compact"
+          consumedMl={waterMl}
+          goalMl={waterGoal}
+          onAdd={(ml)=>nutrition?.addWater?.(ml)}
+          onReset={()=>nutrition?.resetWater?.()}
+        />
       </div>
 
       <style>{`

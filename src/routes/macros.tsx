@@ -6,6 +6,7 @@ import {
   ArrowLeft, Loader2, Plus, Search, Trash2, Star, Copy, Calendar,
   ChevronLeft, ChevronRight, Utensils, Sparkles, X, Save, BarChart3, Flame, Droplet, RotateCcw,
 } from "lucide-react";
+import { WaterTracker } from "@/components/WaterTracker";
 import { computeMacroTargets, MEALS, todayISO, addDaysISO, type MacroTargets } from "@/lib/macros";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
