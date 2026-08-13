@@ -16,7 +16,7 @@ import {
 export const Route = createFileRoute("/macros")({
   ssr: false,
   head: () => ({ meta: [
-    { title: "Macros — Fuel & Flex" },
+    { title: "Fuel — Fuel & Flex" },
     { name: "description", content: "Track calories and macronutrients with a personalized daily food diary." },
   ] }),
   component: MacrosPage,
