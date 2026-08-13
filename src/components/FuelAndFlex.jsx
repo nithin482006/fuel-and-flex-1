@@ -1280,12 +1280,15 @@ function WorkoutTab({data, dateKey, setDateKey, logSet, exerciseHistory, onOpenE
 /* ══════════════════════════════════════════════════════════════
    CHECKLIST ROWS
    ══════════════════════════════════════════════════════════════ */
-function ChecklistRow({icon, label, sub, hint, done, onTap}) {
+function ChecklistRow({icon, label, sub, hint, done, onTap, badge}) {
   return (
     <div className="cl-row" onClick={onTap}>
       {icon}
-      <div style={{flex:1}}>
-        <div style={{fontSize:14,fontWeight:600}}>{label}</div>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,fontSize:14,fontWeight:600}}>
+          {label}
+          {badge && <span className="pill" style={{fontSize:9,padding:"2px 7px",textTransform:"uppercase",letterSpacing:"0.5px"}}>{badge}</span>}
+        </div>
         <div style={{fontFamily:"var(--font-m)",fontSize:11,color:"var(--text-2)",marginTop:1}}>{sub}</div>
         {hint&&<div style={{fontSize:11,color:"var(--text-3)",marginTop:2}}>{hint}</div>}
       </div>
