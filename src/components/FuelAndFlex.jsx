@@ -1534,24 +1534,29 @@ function Dashboard({data, updateDaily, setTab, streak, nutrition}) {
 
         <PlateLoader items={plates}/>
 
+        <div className="card-label" style={{marginBottom:4,marginTop:8,fontSize:9}}>Daily Goals — tap to complete</div>
         <ChecklistRow
           icon={<Sparkles size={16} color="var(--neon)"/>}
-          label="Creatine" sub="3–5 g logged"
+          label="Creatine" sub="3–5 g daily"
           hint="Helps muscles retain energy — take it daily, even rest days"
+          badge="Goal"
           done={!!log.creatine}
           onTap={()=>updateDaily(tk,{creatine:!log.creatine})}/>
         <ChecklistRow
           icon={<Dumbbell size={16} color="var(--cyan)"/>}
           label="Protein" sub={`${proteinG}g of ${proteinGoal}g goal${proteinDone ? " · complete ✓" : ""}`}
           hint="Protein is the raw material your muscles rebuild with"
+          badge="Goal"
           done={proteinDone}
           onTap={()=>setTab("nutrition")}/>
         <ChecklistRow
           icon={<Droplet size={16} color="#00BFFF"/>}
           label="Water" sub={`${(waterMl/1000).toFixed(2)}L of ${(waterGoal/1000).toFixed(2)}L goal${waterDone ? " · complete ✓" : ""}`}
           hint="Even mild dehydration cuts strength by ~10%"
+          badge="Goal"
           done={waterDone}
           onTap={()=>setTab("nutrition")}/>
+        <div className="card-label" style={{marginBottom:4,marginTop:8,fontSize:9}}>Logged Metric — use +/−</div>
         <SleepRow log={log} onChange={h=>updateDaily(tk,{sleepHours:h})}/>
       </div>
     </>
