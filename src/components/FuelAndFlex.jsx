@@ -1280,12 +1280,15 @@ function WorkoutTab({data, dateKey, setDateKey, logSet, exerciseHistory, onOpenE
 /* ══════════════════════════════════════════════════════════════
    CHECKLIST ROWS
    ══════════════════════════════════════════════════════════════ */
-function ChecklistRow({icon, label, sub, hint, done, onTap}) {
+function ChecklistRow({icon, label, sub, hint, done, onTap, badge}) {
   return (
     <div className="cl-row" onClick={onTap}>
       {icon}
-      <div style={{flex:1}}>
-        <div style={{fontSize:14,fontWeight:600}}>{label}</div>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,fontSize:14,fontWeight:600}}>
+          {label}
+          {badge && <span className="pill" style={{fontSize:9,padding:"2px 7px",textTransform:"uppercase",letterSpacing:"0.5px"}}>{badge}</span>}
+        </div>
         <div style={{fontFamily:"var(--font-m)",fontSize:11,color:"var(--text-2)",marginTop:1}}>{sub}</div>
         {hint&&<div style={{fontSize:11,color:"var(--text-3)",marginTop:2}}>{hint}</div>}
       </div>
@@ -1299,23 +1302,29 @@ function ChecklistRow({icon, label, sub, hint, done, onTap}) {
 function SleepRow({log,onChange}) {
   const h=log.sleepHours, met=h!=null&&h>=GOALS.sleepMin;
   return (
-    <div className="cl-row">
+    <div className="cl-row" style={{cursor:"default"}}>
       <Moon size={17} color="var(--purple)"/>
-      <div style={{flex:1}}>
-        <div style={{fontSize:14,fontWeight:600}}>Sleep</div>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,fontSize:14,fontWeight:600}}>
+          Sleep
+          <span className="pill" style={{fontSize:9,padding:"2px 7px",textTransform:"uppercase",letterSpacing:"0.5px",background:"rgba(189,147,249,0.12)",borderColor:"rgba(189,147,249,0.35)",color:"var(--purple)"}}>Log</span>
+        </div>
         <div style={{fontFamily:"var(--font-m)",fontSize:11,color:"var(--text-2)",marginTop:1}}>
           {met?"✓ ":""}Target 7.5–9h
         </div>
-        <div style={{fontSize:11,color:"var(--text-3)",marginTop:2}}>Growth happens while you sleep</div>
+        <div style={{fontSize:11,color:"var(--text-3)",marginTop:2}}>Use +/− to log last night{"'"}s sleep</div>
       </div>
-      <div style={{display:"flex",alignItems:"center",gap:8}}>
-        <button className="btn btn-sm" onClick={()=>onChange(Math.max(0,(h||0)-0.5))}>−</button>
-        <span style={{fontFamily:"var(--font-m)",fontWeight:700,fontSize:15,width:36,textAlign:"center",
-          color:met?"var(--neon)":"var(--text)",
-          textShadow:met?"0 0 8px var(--neon)":"none"}}>
-          {h!=null?h:"—"}
-        </span>
-        <button className="btn btn-sm" onClick={()=>onChange((h||0)+0.5)}>+</button>
+      <div style={{display:"flex",alignItems:"center",gap:6}}>
+        <div style={{display:"flex",alignItems:"center",gap:4,background:"var(--surf2)",border:"1px solid var(--bdr2)",borderRadius:10,padding:"3px 4px"}}>
+          <button className="btn btn-sm" onClick={()=>onChange(Math.max(0,(h||0)-0.5))}>−</button>
+          <span style={{fontFamily:"var(--font-m)",fontWeight:700,fontSize:15,width:36,textAlign:"center",
+            color:met?"var(--neon)":"var(--text)",
+            textShadow:met?"0 0 8px var(--neon)":"none"}}>
+            {h!=null?h:"—"}
+          </span>
+          <button className="btn btn-sm" onClick={()=>onChange((h||0)+0.5)}>+</button>
+        </div>
+        <span style={{fontSize:10,color:"var(--text-3)",fontFamily:"var(--font-m)"}}>hrs</span>
       </div>
     </div>
   );
@@ -1525,24 +1534,29 @@ function Dashboard({data, updateDaily, setTab, streak, nutrition}) {
 
         <PlateLoader items={plates}/>
 
+        <div className="card-label" style={{marginBottom:4,marginTop:8,fontSize:9}}>Daily Goals — tap to complete</div>
         <ChecklistRow
           icon={<Sparkles size={16} color="var(--neon)"/>}
-          label="Creatine" sub="3–5 g logged"
+          label="Creatine" sub="3–5 g daily"
           hint="Helps muscles retain energy — take it daily, even rest days"
+          badge="Goal"
           done={!!log.creatine}
           onTap={()=>updateDaily(tk,{creatine:!log.creatine})}/>
         <ChecklistRow
           icon={<Dumbbell size={16} color="var(--cyan)"/>}
           label="Protein" sub={`${proteinG}g of ${proteinGoal}g goal${proteinDone ? " · complete ✓" : ""}`}
           hint="Protein is the raw material your muscles rebuild with"
+          badge="Goal"
           done={proteinDone}
           onTap={()=>setTab("nutrition")}/>
         <ChecklistRow
           icon={<Droplet size={16} color="#00BFFF"/>}
           label="Water" sub={`${(waterMl/1000).toFixed(2)}L of ${(waterGoal/1000).toFixed(2)}L goal${waterDone ? " · complete ✓" : ""}`}
           hint="Even mild dehydration cuts strength by ~10%"
+          badge="Goal"
           done={waterDone}
           onTap={()=>setTab("nutrition")}/>
+        <div className="card-label" style={{marginBottom:4,marginTop:8,fontSize:9}}>Logged Metric — use +/−</div>
         <SleepRow log={log} onChange={h=>updateDaily(tk,{sleepHours:h})}/>
       </div>
     </>
