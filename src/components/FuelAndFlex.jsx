@@ -1417,7 +1417,7 @@ function DashboardHero({ nutrition, data, tk, wd, dayData }) {
         <Ring value={cals} goal={calGoal} color="#FB923C" label="Calories"/>
         <Ring value={protein} goal={proteinGoal} color="#22C55E" label="Protein" unit="g"/>
         <Ring value={waterMl/1000} goal={waterGoal/1000} color="#3B82F6" label="Water" unit="L"/>
-        <Ring value={workoutVal} goal={workoutGoal} color="#EF4444" label="Workout"/>
+        <Ring value={workoutVal} goal={workoutGoal} color="#EF4444" label="Workout" unit=" sets"/>
       </div>
 
       <div style={{marginTop:14,position:"relative"}}>
