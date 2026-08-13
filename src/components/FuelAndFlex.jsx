@@ -1302,23 +1302,29 @@ function ChecklistRow({icon, label, sub, hint, done, onTap, badge}) {
 function SleepRow({log,onChange}) {
   const h=log.sleepHours, met=h!=null&&h>=GOALS.sleepMin;
   return (
-    <div className="cl-row">
+    <div className="cl-row" style={{cursor:"default"}}>
       <Moon size={17} color="var(--purple)"/>
-      <div style={{flex:1}}>
-        <div style={{fontSize:14,fontWeight:600}}>Sleep</div>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,fontSize:14,fontWeight:600}}>
+          Sleep
+          <span className="pill" style={{fontSize:9,padding:"2px 7px",textTransform:"uppercase",letterSpacing:"0.5px",background:"rgba(189,147,249,0.12)",borderColor:"rgba(189,147,249,0.35)",color:"var(--purple)"}}>Log</span>
+        </div>
         <div style={{fontFamily:"var(--font-m)",fontSize:11,color:"var(--text-2)",marginTop:1}}>
           {met?"✓ ":""}Target 7.5–9h
         </div>
-        <div style={{fontSize:11,color:"var(--text-3)",marginTop:2}}>Growth happens while you sleep</div>
+        <div style={{fontSize:11,color:"var(--text-3)",marginTop:2}}>Use +/− to log last night{"'"}s sleep</div>
       </div>
-      <div style={{display:"flex",alignItems:"center",gap:8}}>
-        <button className="btn btn-sm" onClick={()=>onChange(Math.max(0,(h||0)-0.5))}>−</button>
-        <span style={{fontFamily:"var(--font-m)",fontWeight:700,fontSize:15,width:36,textAlign:"center",
-          color:met?"var(--neon)":"var(--text)",
-          textShadow:met?"0 0 8px var(--neon)":"none"}}>
-          {h!=null?h:"—"}
-        </span>
-        <button className="btn btn-sm" onClick={()=>onChange((h||0)+0.5)}>+</button>
+      <div style={{display:"flex",alignItems:"center",gap:6}}>
+        <div style={{display:"flex",alignItems:"center",gap:4,background:"var(--surf2)",border:"1px solid var(--bdr2)",borderRadius:10,padding:"3px 4px"}}>
+          <button className="btn btn-sm" onClick={()=>onChange(Math.max(0,(h||0)-0.5))}>−</button>
+          <span style={{fontFamily:"var(--font-m)",fontWeight:700,fontSize:15,width:36,textAlign:"center",
+            color:met?"var(--neon)":"var(--text)",
+            textShadow:met?"0 0 8px var(--neon)":"none"}}>
+            {h!=null?h:"—"}
+          </span>
+          <button className="btn btn-sm" onClick={()=>onChange((h||0)+0.5)}>+</button>
+        </div>
+        <span style={{fontSize:10,color:"var(--text-3)",fontFamily:"var(--font-m)"}}>hrs</span>
       </div>
     </div>
   );
