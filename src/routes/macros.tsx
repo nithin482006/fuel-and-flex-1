@@ -16,7 +16,7 @@ import {
 export const Route = createFileRoute("/macros")({
   ssr: false,
   head: () => ({ meta: [
-    { title: "Macros — Fuel & Flex" },
+    { title: "Fuel — Fuel & Flex" },
     { name: "description", content: "Track calories and macronutrients with a personalized daily food diary." },
   ] }),
   component: MacrosPage,
@@ -169,8 +169,8 @@ function MacrosPage() {
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div className="flex items-center gap-3">
             <Link to="/" className="ff-mono flex items-center gap-1 text-xs text-zinc-400 hover:text-emerald-400"><ArrowLeft className="w-4 h-4" />Dashboard</Link>
-            <h1 className="ff-display text-lg md:text-xl font-bold uppercase">
-              <span className="text-emerald-400">Macros</span> Management
+            <h1 className="ff-display text-lg md:text-xl font-bold uppercase text-emerald-400">
+              Fuel
             </h1>
           </div>
           <div className="flex items-center gap-2">
