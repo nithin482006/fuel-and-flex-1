@@ -117,9 +117,39 @@ function AuthPage() {
               <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} placeholder="you@example.com" />
             </Field>
             {mode !== "forgot" && (
-              <Field label="Password">
-                <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} className={inputCls} placeholder="At least 8 characters" minLength={8} />
-              </Field>
+              <div>
+                <label className="ff-label block mb-1.5">Password</label>
+                <div className="relative">
+                  <input
+                    required
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={`${inputCls} pr-10`}
+                    placeholder="At least 8 characters"
+                    minLength={8}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-zinc-400 hover:text-emerald-400 transition"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            )}
+            {mode !== "forgot" && (
+              <label className="flex items-center gap-2.5 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 rounded border-zinc-600 bg-zinc-900 text-emerald-400 focus:ring-emerald-400 focus:ring-offset-0"
+                />
+                <span className="text-sm text-zinc-400 group-hover:text-zinc-300 transition">Remember me</span>
+              </label>
             )}
 
             <button type="submit" disabled={busy} className="ff-btn-neon w-full h-11 disabled:opacity-50 flex items-center justify-center gap-2">
