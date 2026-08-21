@@ -64,11 +64,15 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        localStorage.setItem("ff_remember_me", String(rememberMe));
+        if (!rememberMe) sessionStorage.setItem("ff_skip_remember_check", "1");
         toast.success("Account created. Welcome!");
         navigate({ to: "/" });
       } else if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        localStorage.setItem("ff_remember_me", String(rememberMe));
+        if (!rememberMe) sessionStorage.setItem("ff_skip_remember_check", "1");
         toast.success("Signed in.");
         navigate({ to: "/" });
       } else {
