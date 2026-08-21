@@ -118,7 +118,7 @@ function AuthPage() {
             </Field>
             {mode !== "forgot" && (
               <div>
-                <label className="ff-label block mb-1.5">Password</label>
+                <label htmlFor="password" className="ff-label block mb-1.5">Password</label>
                 <div className="relative">
                   <input
                     required
