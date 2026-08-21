@@ -121,6 +121,7 @@ function AuthPage() {
                 <label htmlFor="password" className="ff-label block mb-1.5">Password</label>
                 <div className="relative">
                   <input
+                    id="password"
                     required
                     type={showPassword ? "text" : "password"}
                     value={password}
