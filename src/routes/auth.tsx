@@ -141,12 +141,12 @@ function AuthPage() {
               </div>
             )}
             {mode !== "forgot" && (
-              <label className="flex items-center gap-2.5 cursor-pointer group">
+              <label className="flex items-center gap-3 cursor-pointer group min-h-11">
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-600 bg-zinc-900 text-emerald-400 focus:ring-emerald-400 focus:ring-offset-0"
+                  className="h-5 w-5 rounded border-zinc-600 bg-zinc-900 text-emerald-400 focus:ring-emerald-400 focus:ring-offset-0"
                 />
                 <span className="text-sm text-zinc-400 group-hover:text-zinc-300 transition">Remember me</span>
               </label>
