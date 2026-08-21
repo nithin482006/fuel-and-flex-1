@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 
 export const Route = createFileRoute("/auth")({
@@ -26,6 +26,22 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const stored = localStorage.getItem("ff_remember_me");
+    return stored === null ? true : stored === "true";
+  });
+
+  useEffect(() => {
+    const remember = localStorage.getItem("ff_remember_me");
+    const skip = sessionStorage.getItem("ff_skip_remember_check");
+    if (remember === "false" && !skip) {
+      supabase.auth.signOut().catch(() => {});
+    } else if (skip) {
+      sessionStorage.removeItem("ff_skip_remember_check");
+    }
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -48,11 +64,15 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        localStorage.setItem("ff_remember_me", String(rememberMe));
+        if (!rememberMe) sessionStorage.setItem("ff_skip_remember_check", "1");
         toast.success("Account created. Welcome!");
         navigate({ to: "/" });
       } else if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        localStorage.setItem("ff_remember_me", String(rememberMe));
+        if (!rememberMe) sessionStorage.setItem("ff_skip_remember_check", "1");
         toast.success("Signed in.");
         navigate({ to: "/" });
       } else {
@@ -97,9 +117,40 @@ function AuthPage() {
               <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} placeholder="you@example.com" />
             </Field>
             {mode !== "forgot" && (
-              <Field label="Password">
-                <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} className={inputCls} placeholder="At least 8 characters" minLength={8} />
-              </Field>
+              <div>
+                <label htmlFor="password" className="ff-label block mb-1.5">Password</label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    required
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={`${inputCls} pr-11`}
+                    placeholder="At least 8 characters"
+                    minLength={8}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-11 w-11 flex items-center justify-center text-zinc-400 hover:text-emerald-400 transition"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            )}
+            {mode !== "forgot" && (
+              <label className="flex items-center gap-3 cursor-pointer group min-h-11">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-5 w-5 rounded border-zinc-600 bg-zinc-900 text-emerald-400 focus:ring-emerald-400 focus:ring-offset-0"
+                />
+                <span className="text-sm text-zinc-400 group-hover:text-zinc-300 transition">Remember me</span>
+              </label>
             )}
 
             <button type="submit" disabled={busy} className="ff-btn-neon w-full h-11 disabled:opacity-50 flex items-center justify-center gap-2">
